@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Codex个性化以及自定义设置记录 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="持续记录 Codex 使用过程中的个性化配置、自定义设置与常用操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Codex个性化以及自定义设置记录">
+<meta property="og:url" content="https://scnabla.github.io/posts/f273f4f5/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="持续记录 Codex 使用过程中的个性化配置、自定义设置与常用操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/web_image/covers/ai-tools.svg">
+<meta property="article:published_time" content="2026-08-01T08:13:10.000Z">
+<meta property="article:modified_time" content="2026-09-18T18:42:51.000Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Codex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/web_image/covers/ai-tools.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Codex个性化以及自定义设置记录",
+  "url": "https://scnabla.github.io/posts/f273f4f5/",
+  "image": "https://scnabla.github.io/web_image/covers/ai-tools.svg",
+  "datePublished": "2026-08-01T08:13:10.000Z",
+  "dateModified": "2026-09-18T18:42:51.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "scnabla",
+      "url": "https://scnabla.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/posts/f273f4f5/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Codex个性化以及自定义设置记录',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20260809-5"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">Codex个性化以及自定义设置记录</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Codex个性化以及自定义设置记录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-01T08:13:10.000Z" title="发表于 2026-08-01 16:13:10">2026-08-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-09-18T18:42:51.000Z" title="更新于 2026-09-19 02:42:51">2026-09-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI/">AI</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="win端"><a href="#win端" class="headerlink" title="win端"></a>win端</h3><h4 id="SKILL"><a href="#SKILL" class="headerlink" title="SKILL"></a>SKILL</h4><p>Git提交与推送SKILL，参见：<a href="/posts/7af4677e/">Codex的Git提交与推送SKILL配置</a>。</p>
+<p>GitHub平台操作SKILL，参见：<a href="/posts/c83a190f/">Codex的GitHub平台操作SKILL配置</a>。</p>
+<h2 id="Codex-会话迁移与复制命令"><a href="#Codex-会话迁移与复制命令" class="headerlink" title="Codex 会话迁移与复制命令"></a>Codex 会话迁移与复制命令</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">codex resume <span class="literal">--all</span> <span class="literal">-C</span> .</span><br><span class="line">codex fork <span class="literal">--all</span> <span class="literal">-C</span> .</span><br></pre></td></tr></table></figure>
+
+<h3 id="参数含义"><a href="#参数含义" class="headerlink" title="参数含义"></a>参数含义</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>resume</code></td>
+<td>继续既有会话，沿用原会话 ID 和对话历史。</td>
+</tr>
+<tr>
+<td><code>fork</code></td>
+<td>从既有会话创建一个新的分支会话，继承此前的对话历史，但使用新的会话 ID。</td>
+</tr>
+<tr>
+<td><code>--all</code></td>
+<td>在选择器中显示其他工作目录保存的会话，不是对所有会话执行操作。</td>
+</tr>
+<tr>
+<td><code>-C &lt;目录&gt;</code></td>
+<td>指定本次会话的工作根目录。</td>
+</tr>
+</tbody></table>
+<p><code>codex resume --all -C .</code></p>
+<h4 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h4><p>在当前目录中继续一个既有会话，即使该会话原来保存在其他工作目录下。</p>
+<h4 id="行为"><a href="#行为" class="headerlink" title="行为"></a>行为</h4><ul>
+<li>打开包含所有目录会话的选择器。</li>
+<li>选择会话后继续原会话，不创建新的会话分支。</li>
+<li>本次运行以当前目录作为工作根目录。</li>
+<li>不会复制、移动或改写项目文件。</li>
+<li>不会移动 Codex 的会话存储文件，也不会自动修改历史消息中的旧路径。</li>
+</ul>
+<h4 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h4><ul>
+<li>项目目录已更名或迁移，但仍希望继续原会话。</li>
+<li>当前目录的默认会话列表中看不到目标会话。</li>
+<li>希望原会话保持一条连续的对话记录。</li>
+</ul>
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><p>如果会话保存的目录与当前目录不同，省略 <code>-C .</code> 时，Codex 可能询问使用当前目录还是会话原目录。显式指定 <code>-C .</code> 可以直接选定当前目录。</p>
+<p>由于原会话仍可能按旧目录出现在选择器中，以后继续这个原会话时，可能仍需使用 <code>--all</code>。</p>
+<p><code>codex fork --all -C .</code></p>
+<h4 id="用途-1"><a href="#用途-1" class="headerlink" title="用途"></a>用途</h4><p>以既有会话为基础，在当前目录创建一个新的分支会话。</p>
+<h4 id="行为-1"><a href="#行为-1" class="headerlink" title="行为"></a>行为</h4><ul>
+<li>打开包含所有目录会话的选择器。</li>
+<li>新会话继承所选会话此前的对话历史。</li>
+<li>新会话拥有独立的会话 ID，后续对话不会继续写入原会话。</li>
+<li>新会话以当前目录作为工作根目录。</li>
+<li>原会话仍然保留，可以独立恢复。</li>
+<li>不会复制或移动项目文件。</li>
+</ul>
+<h4 id="适用场景-1"><a href="#适用场景-1" class="headerlink" title="适用场景"></a>适用场景</h4><ul>
+<li>项目迁移到新目录后，希望以后直接按新目录查找会话。</li>
+<li>希望保留原会话，同时从当前进度开始新的工作分支。</li>
+<li>希望避免以后反复从所有目录中寻找旧会话。</li>
+</ul>
+<h3 id="推荐的目录迁移流程"><a href="#推荐的目录迁移流程" class="headerlink" title="推荐的目录迁移流程"></a>推荐的目录迁移流程</h3><ol>
+<li><p>先由当前 Windows 用户创建目标目录，并确认目录所有者和权限正常。</p>
+</li>
+<li><p>将需要的项目文件复制或移动到目标目录。<code>resume</code> 和 <code>fork</code> 都不会迁移项目文件。</p>
+</li>
+<li><p>在终端中进入目标目录。</p>
+</li>
+<li><p>根据目标选择命令：</p>
+<ul>
+<li><p>继续写入原会话：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codex resume <span class="literal">--all</span> <span class="literal">-C</span> .</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>建立归属于新目录的分支会话：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codex fork <span class="literal">--all</span> <span class="literal">-C</span> .</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>如果选择了 <code>fork</code>，以后在新目录中通常可以直接执行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codex resume</span><br></pre></td></tr></table></figure>
+
+<p>若要跳过选择器并继续当前目录最近的会话，可以执行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codex resume <span class="literal">--last</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="如何选择"><a href="#如何选择" class="headerlink" title="如何选择"></a>如何选择</h3><table>
+<thead>
+<tr>
+<th>目标</th>
+<th>推荐命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>必须延续同一个会话 ID</td>
+<td><code>codex resume --all -C .</code></td>
+</tr>
+<tr>
+<td>保留原会话，并在新目录建立独立会话</td>
+<td><code>codex fork --all -C .</code></td>
+</tr>
+<tr>
+<td>项目已长期迁移到新目录</td>
+<td>先执行一次 <code>codex fork --all -C .</code>，以后使用 <code>codex resume</code></td>
+</tr>
+<tr>
+<td>目标会话已经归属于当前目录</td>
+<td><code>codex resume</code>，通常不需要 <code>--all -C .</code></td>
+</tr>
+</tbody></table>
+<h3 id="目录创建与权限说明"><a href="#目录创建与权限说明" class="headerlink" title="目录创建与权限说明"></a>目录创建与权限说明</h3><p><code>-C</code> 只指定工作目录，不负责创建目录，因此目标目录必须事先存在。</p>
+<p>目录不一定只能手动创建；真正的要求是目录存在，并且当前用户与 Codex 沙箱拥有正确权限。Windows 环境下，为避免目录所有者变成沙箱账号，建议由当前 Windows 用户在沙箱外创建项目根目录，再从该目录启动 Codex。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/f273f4f5/">https://scnabla.github.io/posts/f273f4f5/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AI/">AI</a><a class="post-meta__tags" href="/tags/Codex/">Codex</a></div><div class="post-share"><div class="social-share" data-image="/web_image/covers/ai-tools.svg" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related  no-desc" href="/posts/86147ec3/" title="2026年计划"><img class="cover" src="/web_image/covers/life-notes.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">2026年计划</div></div></div></a><a class="pagination-related  no-desc" href="/posts/9973dcca/" title="Claude Code 个性化自定义设置记录"><img class="cover" src="/web_image/covers/ai-tools.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Claude Code 个性化自定义设置记录</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#win%E7%AB%AF"><span class="toc-number">1.1.</span> <span class="toc-text">win端</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#SKILL"><span class="toc-number">1.1.1.</span> <span class="toc-text">SKILL</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Codex-%E4%BC%9A%E8%AF%9D%E8%BF%81%E7%A7%BB%E4%B8%8E%E5%A4%8D%E5%88%B6%E5%91%BD%E4%BB%A4"><span class="toc-number">2.</span> <span class="toc-text">Codex 会话迁移与复制命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E5%90%AB%E4%B9%89"><span class="toc-number">2.1.</span> <span class="toc-text">参数含义</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%A8%E9%80%94"><span class="toc-number">2.1.1.</span> <span class="toc-text">用途</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A1%8C%E4%B8%BA"><span class="toc-number">2.1.2.</span> <span class="toc-text">行为</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.1.3.</span> <span class="toc-text">适用场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">2.1.4.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%A8%E9%80%94-1"><span class="toc-number">2.1.5.</span> <span class="toc-text">用途</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A1%8C%E4%B8%BA-1"><span class="toc-number">2.1.6.</span> <span class="toc-text">行为</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF-1"><span class="toc-number">2.1.7.</span> <span class="toc-text">适用场景</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E8%8D%90%E7%9A%84%E7%9B%AE%E5%BD%95%E8%BF%81%E7%A7%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.</span> <span class="toc-text">推荐的目录迁移流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9"><span class="toc-number">2.3.</span> <span class="toc-text">如何选择</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E5%88%9B%E5%BB%BA%E4%B8%8E%E6%9D%83%E9%99%90%E8%AF%B4%E6%98%8E"><span class="toc-number">2.4.</span> <span class="toc-text">目录创建与权限说明</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：照片水印工具，支持文字、Logo 与版权署名"/></a><div class="content"><a class="title" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名">光影题笺：照片水印工具，支持文字、Logo 与版权署名</a><time datetime="2026-10-14T16:07:05.000Z" title="发表于 2026-10-15 00:07:05">2026-10-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：统一布局架构与预览速度优化"/></a><div class="content"><a class="title" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化">光影题笺：统一布局架构与预览速度优化</a><time datetime="2026-10-13T15:52:37.000Z" title="发表于 2026-10-13 23:52:37">2026-10-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"><img src="/web_image/covers/life-notes.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"/></a><div class="content"><a class="title" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音">Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音</a><time datetime="2026-09-19T15:32:04.000Z" title="发表于 2026-09-19 23:32:04">2026-09-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置"><img src="/web_image/covers/ai-tools.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Codex的GitHub平台操作SKILL配置"/></a><div class="content"><a class="title" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置">Codex的GitHub平台操作SKILL配置</a><time datetime="2026-09-18T18:30:00.000Z" title="发表于 2026-09-19 02:30:00">2026-09-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/91c2cb30/" title="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理"><img src="/posts/91c2cb30/catlas-hub.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理"/></a><div class="content"><a class="title" href="/posts/91c2cb30/" title="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理">CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理</a><time datetime="2026-09-13T15:06:57.000Z" title="发表于 2026-09-13 23:06:57">2026-09-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/moments_bundle.js" defer></script></div></body></html>

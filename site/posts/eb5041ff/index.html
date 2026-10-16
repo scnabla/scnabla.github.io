@@ -1,0 +1,343 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>静态网站的自动化编译与部署（hexo+GitHub Actions） | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="记录本网站基于 Hexo、GitHub Actions、Sharp 与 SSH&#x2F;SCP 实现自动构建、图片优化和服务器部署的完整流程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="静态网站的自动化编译与部署（hexo+GitHub Actions）">
+<meta property="og:url" content="https://scnabla.github.io/posts/eb5041ff/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="记录本网站基于 Hexo、GitHub Actions、Sharp 与 SSH&#x2F;SCP 实现自动构建、图片优化和服务器部署的完整流程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/web_image/covers/engineering.svg">
+<meta property="article:published_time" content="2026-08-04T18:08:37.000Z">
+<meta property="article:modified_time" content="2026-09-18T19:35:22.000Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="Hexo">
+<meta property="article:tag" content="GitHub Actions">
+<meta property="article:tag" content="CI&#x2F;CD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/web_image/covers/engineering.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "静态网站的自动化编译与部署（hexo+GitHub Actions）",
+  "url": "https://scnabla.github.io/posts/eb5041ff/",
+  "image": "https://scnabla.github.io/web_image/covers/engineering.svg",
+  "datePublished": "2026-08-04T18:08:37.000Z",
+  "dateModified": "2026-09-18T19:35:22.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "scnabla",
+      "url": "https://scnabla.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/posts/eb5041ff/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '静态网站的自动化编译与部署（hexo+GitHub Actions）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20260809-5"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">静态网站的自动化编译与部署（hexo+GitHub Actions）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">静态网站的自动化编译与部署（hexo+GitHub Actions）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-04T18:08:37.000Z" title="发表于 2026-08-05 02:08:37">2026-08-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-09-18T19:35:22.000Z" title="更新于 2026-09-19 03:35:22">2026-09-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><p>这个网站是一个基于 Hexo 7.3 和 Butterfly 主题的静态博客。文章、配置和主题定制保存在 Git 仓库中，提交到 <code>main</code> 分支后，由 GitHub Actions 自动完成依赖安装、站点生成、图片压缩和服务器部署。</p>
+<p>本文记录当前项目实际使用的自动化流程。文中的域名、服务器地址、登录用户、部署目录、验证文件名和私钥均不展示真实值，而是通过 GitHub Secrets 或 Variables 注入。</p>
+<h2 id="一、整体流程"><a href="#一、整体流程" class="headerlink" title="一、整体流程"></a>一、整体流程</h2><p>一次部署依次经过以下阶段：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">提交并推送到 main</span><br><span class="line">        ↓</span><br><span class="line">GitHub Actions 检出完整 Git 历史</span><br><span class="line">        ↓</span><br><span class="line">恢复 source 目录中文件的最后修改时间</span><br><span class="line">        ↓</span><br><span class="line">安装依赖并执行 Hexo 构建</span><br><span class="line">        ↓</span><br><span class="line">使用 Sharp 增量压缩 public 中的图片</span><br><span class="line">        ↓</span><br><span class="line">通过 SSH 清理服务器上的旧站点文件</span><br><span class="line">        ↓</span><br><span class="line">通过 SCP 上传新的静态文件并检查 index.html</span><br></pre></td></tr></table></figure>
+
+<p>项目中与这套流程有关的文件如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">project_web/</span><br><span class="line">├─ .github/workflows/sync.yml       # GitHub Actions 工作流</span><br><span class="line">├─ run.sh                           # 根据 Git 历史恢复源文件时间</span><br><span class="line">└─ blog/</span><br><span class="line">   ├─ package.json                  # Hexo、Sharp 和构建命令</span><br><span class="line">   ├─ package-lock.json             # npm 锁文件</span><br><span class="line">   ├─ tools/optimize-images.js      # 图片增量优化脚本</span><br><span class="line">   ├─ source/                       # 文章和静态资源</span><br><span class="line">   └─ public/                       # 构建产物，不纳入版本控制</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、为什么要自动化"><a href="#二、为什么要自动化" class="headerlink" title="二、为什么要自动化"></a>二、为什么要自动化</h2><p>静态网站的部署看起来只是“生成文件再上传”，但手工操作很容易出现几个问题：</p>
+<ul>
+<li>本地 Node.js 或依赖版本不同，导致构建结果不一致；</li>
+<li>忘记上传某个文件，线上内容处于新旧混合状态；</li>
+<li>每次都重新压缩全部图片，部署时间越来越长；</li>
+<li>Hexo 读取文件系统时间后，文章更新时间可能被检出操作改写；</li>
+<li>私钥、服务器地址或站点路径被直接写进仓库。</li>
+</ul>
+<p>把这些步骤固定在 CI&#x2F;CD（持续集成与持续部署）工作流中，可以让每次发布使用相同的环境和命令，也能把敏感配置留在仓库之外。</p>
+<h2 id="三、准备服务器和-GitHub-Environment"><a href="#三、准备服务器和-GitHub-Environment" class="headerlink" title="三、准备服务器和 GitHub Environment"></a>三、准备服务器和 GitHub Environment</h2><h3 id="1-创建专用部署用户"><a href="#1-创建专用部署用户" class="headerlink" title="1. 创建专用部署用户"></a>1. 创建专用部署用户</h3><p>服务器应使用权限受限的部署用户，不要让流水线直接以 <code>root</code> 身份登录。部署用户只需要拥有站点目录的读写权限，以及通过 SSH 登录的权限。</p>
+<p>在可信设备上为流水线生成一对独立的密钥：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t ed25519 -C <span class="string">&quot;github-actions-deploy&quot;</span> -f ./github_actions_deploy</span><br></pre></td></tr></table></figure>
+
+<p>把公钥 <code>github_actions_deploy.pub</code> 添加到部署用户的 <code>~/.ssh/authorized_keys</code>，把私钥 <code>github_actions_deploy</code> 的完整内容保存到 GitHub Environment Secret。私钥不能提交到仓库，也不要在日志中输出。</p>
+<h3 id="2-配置-Environment"><a href="#2-配置-Environment" class="headerlink" title="2. 配置 Environment"></a>2. 配置 Environment</h3><p>当前工作流使用名为 <code>secrets</code> 的 GitHub Environment。建议在该 Environment 中配置以下内容：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>名称</th>
+<th>作用</th>
+<th>示例值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Secret</td>
+<td><code>SERVER_HOST</code></td>
+<td>服务器主机名或 IP</td>
+<td><code>&lt;SERVER_HOST&gt;</code></td>
+</tr>
+<tr>
+<td>Secret</td>
+<td><code>SERVER_USER</code></td>
+<td>SSH 部署用户</td>
+<td><code>&lt;DEPLOY_USER&gt;</code></td>
+</tr>
+<tr>
+<td>Secret</td>
+<td><code>SSH_PRIVATE_KEY</code></td>
+<td>部署专用私钥全文</td>
+<td><code>&lt;PRIVATE_KEY_CONTENT&gt;</code></td>
+</tr>
+<tr>
+<td>Variable</td>
+<td><code>SERVER_DEPLOY_PATH</code></td>
+<td>服务器站点绝对路径</td>
+<td><code>&lt;DEPLOY_DIRECTORY&gt;</code></td>
+</tr>
+</tbody></table>
+<p>表格中的尖括号内容只是占位符，不能原样用于部署。<code>GITHUB_TOKEN</code> 不需要手工创建，它由 GitHub Actions 为每次运行临时生成。本项目只用它在构建阶段读取公开的 GitHub 贡献数据，因此工作流将仓库权限限制为 <code>contents: read</code>。</p>
+<p>如果 Environment 配置了审批规则，生产部署会在执行前等待批准，这也能避免一次误推送立即覆盖线上站点。</p>
+<h2 id="四、固定构建环境"><a href="#四、固定构建环境" class="headerlink" title="四、固定构建环境"></a>四、固定构建环境</h2><p>项目在 <code>blog/package.json</code> 中声明 Node.js <code>24.18.1</code>、npm <code>11.16.0</code>，工作流同时固定 Node.js 版本，并通过 <code>package-lock.json</code> 恢复依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line">npm ci --legacy-peer-deps --prefer-offline --no-audit --no-fund</span><br><span class="line">npm run build</span><br></pre></td></tr></table></figure>
+
+<p>这里使用 <code>npm ci</code> 而不是 <code>npm install</code>，原因是它严格按照锁文件安装，更适合可复现构建。<code>--legacy-peer-deps</code> 用于兼容当前 Hexo 插件的依赖关系，<code>--no-audit --no-fund</code> 可以减少与构建无关的网络请求和日志。</p>
+<p>常用脚本如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;scripts&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;build&quot;</span><span class="punctuation">:</span> <span class="string">&quot;hexo generate&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;clean&quot;</span><span class="punctuation">:</span> <span class="string">&quot;hexo clean&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;images:optimize&quot;</span><span class="punctuation">:</span> <span class="string">&quot;node tools/optimize-images.js&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;server&quot;</span><span class="punctuation">:</span> <span class="string">&quot;hexo server&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>本地只想检查内容时，可以执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line">npm run build</span><br><span class="line">npm run server</span><br></pre></td></tr></table></figure>
+
+<p><code>npm run clean</code> 会删除 <code>public/</code> 和 Hexo 数据库缓存，不应把它当作普通检查命令随意执行。CI 中的工作区是一次性的，因此可以在构建前清理这些可再生成内容。</p>
+<h2 id="五、恢复文章的文件时间"><a href="#五、恢复文章的文件时间" class="headerlink" title="五、恢复文章的文件时间"></a>五、恢复文章的文件时间</h2><p>Git 记录提交历史，但不会保存文件系统的修改时间。Actions 检出仓库后，许多文件会得到接近当前时间的时间戳，可能影响主题显示的文章更新时间。</p>
+<p>本项目的 <code>run.sh</code> 会查询每个 <code>blog/source</code> 文件最近一次提交的 Unix 时间戳，再使用 GNU <code>touch</code> 写回文件时间：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/bash</span></span><br><span class="line"><span class="built_in">export</span> TZ=<span class="string">&#x27;Asia/Shanghai&#x27;</span></span><br><span class="line"></span><br><span class="line">git ls-files --directory ./blog/source | <span class="keyword">while</span> <span class="built_in">read</span> path; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">touch</span> -d <span class="string">&quot;<span class="subst">$(git log -1 --format=&#x27;@%ct&#x27; <span class="string">&quot;<span class="variable">$path</span>&quot;</span>)</span>&quot;</span> <span class="string">&quot;<span class="variable">$path</span>&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p>因为脚本需要查询完整提交历史，<code>actions/checkout</code> 必须设置 <code>fetch-depth: &#39;0&#39;</code>。如果使用默认的浅克隆，较早文章的最后修改提交可能不在本地，恢复结果就不可靠。</p>
+<h2 id="六、使用-Sharp-增量优化图片"><a href="#六、使用-Sharp-增量优化图片" class="headerlink" title="六、使用 Sharp 增量优化图片"></a>六、使用 Sharp 增量优化图片</h2><p>Hexo 生成完成后，<code>tools/optimize-images.js</code> 会递归扫描 <code>blog/public/</code> 中的 <code>.jpg</code>、<code>.jpeg</code> 和 <code>.png</code> 文件。当前处理策略为：</p>
+<ul>
+<li>图片最长边限制在 <code>1920 × 1080</code> 范围内，并禁止放大小图；</li>
+<li>JPEG 使用质量 <code>80</code> 和 MozJPEG 编码；</li>
+<li>PNG 使用压缩级别 <code>9</code>；</li>
+<li>如果压缩后的文件反而更大，则保留原文件；</li>
+<li>以“图片内容、扩展名和压缩配置”共同计算 SHA-256 缓存键；</li>
+<li>相同内容只处理一次，之后直接复用缓存结果；</li>
+<li>默认并发数不超过 <code>2</code>，降低 CI 中的瞬时内存压力。</li>
+</ul>
+<p>缓存目录是 <code>blog/.cache/sharp-images/v1</code>。工作流先恢复旧缓存，只在出现新缓存内容时保存新版本，避免每次部署都上传完全相同的缓存。</p>
+<p>本地修改图片后，可以先演练：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line">IMAGE_DRY_RUN=<span class="literal">true</span> npm run images:optimize</span><br></pre></td></tr></table></figure>
+
+<p>演练模式只输出扫描数量、缓存命中数和预计压缩体积，不改写图片。Windows PowerShell 中可以这样设置一次性环境变量：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$env:IMAGE_DRY_RUN</span>=<span class="string">&#x27;true&#x27;</span></span><br><span class="line">npm run images:optimize</span><br><span class="line"><span class="built_in">Remove-Item</span> Env:IMAGE_DRY_RUN</span><br></pre></td></tr></table></figure>
+
+<p>GIF 和 SVG 不在当前 Sharp 脚本的处理范围内。工作流仍保留旧 Gulp 图片流程作为紧急回退，但默认关闭，也不会把 Gulp 作为项目直接依赖安装。</p>
+<h2 id="七、完整的脱敏工作流"><a href="#七、完整的脱敏工作流" class="headerlink" title="七、完整的脱敏工作流"></a>七、完整的脱敏工作流</h2><p>下面的示例保留了本项目的关键步骤，同时将所有环境相关信息改成 Secrets 或 Variables。真实站点的域名、服务器地址、用户、目录、验证文件名和密钥都不应出现在仓库中。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Build</span> <span class="string">and</span> <span class="string">deploy</span> <span class="string">Hexo</span> <span class="string">site</span></span><br><span class="line"></span><br><span class="line"><span class="attr">permissions:</span></span><br><span class="line">  <span class="attr">contents:</span> <span class="string">read</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">main</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line">    <span class="attr">environment:</span> <span class="string">secrets</span></span><br><span class="line">    <span class="attr">env:</span></span><br><span class="line">      <span class="attr">USE_LEGACY_IMAGE_PIPELINE:</span> <span class="string">&#x27;false&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">code</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v6</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">fetch-depth:</span> <span class="string">&#x27;0&#x27;</span></span><br><span class="line">          <span class="attr">path:</span> <span class="string">repo</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v7</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="string">&#x27;24.18.1&#x27;</span></span><br><span class="line">          <span class="attr">cache:</span> <span class="string">npm</span></span><br><span class="line">          <span class="attr">cache-dependency-path:</span> <span class="string">repo/blog/package-lock.json</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">repo/blog</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">ci</span> <span class="string">--legacy-peer-deps</span> <span class="string">--prefer-offline</span> <span class="string">--no-audit</span> <span class="string">--no-fund</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Build</span> <span class="string">site</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">repo</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">GITHUB_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">          git config --global core.quotepath false</span></span><br><span class="line"><span class="string">          chmod +x run.sh</span></span><br><span class="line"><span class="string">          ./run.sh</span></span><br><span class="line"><span class="string">          cd blog</span></span><br><span class="line"><span class="string">          npm run clean</span></span><br><span class="line"><span class="string">          npm run build</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Restore</span> <span class="string">Sharp</span> <span class="string">image</span> <span class="string">cache</span></span><br><span class="line">        <span class="attr">if:</span> <span class="string">env.USE_LEGACY_IMAGE_PIPELINE</span> <span class="type">!=</span> <span class="string">&#x27;true&#x27;</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/cache/restore@v6</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">path:</span> <span class="string">repo/blog/.cache/sharp-images/v1</span></span><br><span class="line">          <span class="attr">key:</span> <span class="string">sharp-images-v1-$&#123;&#123;</span> <span class="string">runner.os</span> <span class="string">&#125;&#125;-$&#123;&#123;</span> <span class="string">github.run_id</span> <span class="string">&#125;&#125;-$&#123;&#123;</span> <span class="string">github.run_attempt</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">restore-keys:</span> <span class="string">|</span></span><br><span class="line"><span class="string">            sharp-images-v1-$&#123;&#123; runner.os &#125;&#125;-</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Optimize</span> <span class="string">images</span> <span class="string">with</span> <span class="string">Sharp</span></span><br><span class="line">        <span class="attr">if:</span> <span class="string">env.USE_LEGACY_IMAGE_PIPELINE</span> <span class="type">!=</span> <span class="string">&#x27;true&#x27;</span></span><br><span class="line">        <span class="attr">id:</span> <span class="string">sharp-images</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">repo/blog</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">IMAGE_OPTIMIZE_CONCURRENCY:</span> <span class="string">&#x27;2&#x27;</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">images:optimize</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Save</span> <span class="string">Sharp</span> <span class="string">image</span> <span class="string">cache</span></span><br><span class="line">        <span class="attr">if:</span> <span class="string">env.USE_LEGACY_IMAGE_PIPELINE</span> <span class="type">!=</span> <span class="string">&#x27;true&#x27;</span> <span class="string">&amp;&amp;</span> <span class="string">steps.sharp-images.outputs.cache_changed</span> <span class="string">==</span> <span class="string">&#x27;true&#x27;</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/cache/save@v6</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">path:</span> <span class="string">repo/blog/.cache/sharp-images/v1</span></span><br><span class="line">          <span class="attr">key:</span> <span class="string">sharp-images-v1-$&#123;&#123;</span> <span class="string">runner.os</span> <span class="string">&#125;&#125;-$&#123;&#123;</span> <span class="string">github.run_id</span> <span class="string">&#125;&#125;-$&#123;&#123;</span> <span class="string">github.run_attempt</span> <span class="string">&#125;&#125;</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Remove</span> <span class="string">old</span> <span class="string">site</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">appleboy/ssh-action@v1.0.3</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">DEPLOY_PATH:</span> <span class="string">$&#123;&#123;</span> <span class="string">vars.SERVER_DEPLOY_PATH</span> <span class="string">&#125;&#125;</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">host:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SERVER_HOST</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">username:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SERVER_USER</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">key:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SSH_PRIVATE_KEY</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">envs:</span> <span class="string">DEPLOY_PATH</span></span><br><span class="line">          <span class="attr">script:</span> <span class="string">|</span></span><br><span class="line"><span class="string">            set -eu</span></span><br><span class="line"><span class="string">            if [ -z &quot;$DEPLOY_PATH&quot; ] || [ &quot;$DEPLOY_PATH&quot; = &quot;/&quot; ]; then</span></span><br><span class="line"><span class="string">              echo &quot;拒绝清理空路径或根目录&quot;</span></span><br><span class="line"><span class="string">              exit 1</span></span><br><span class="line"><span class="string">            fi</span></span><br><span class="line"><span class="string">            test -d &quot;$DEPLOY_PATH&quot;</span></span><br><span class="line"><span class="string">            find &quot;$DEPLOY_PATH&quot; -mindepth 1 -maxdepth 1 -exec rm -rf -- &#123;&#125; +</span></span><br><span class="line"><span class="string"></span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Upload</span> <span class="string">site</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">appleboy/scp-action@v0.1.7</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">host:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SERVER_HOST</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">username:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SERVER_USER</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">key:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SSH_PRIVATE_KEY</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">source:</span> <span class="string">&#x27;repo/blog/public/*&#x27;</span></span><br><span class="line">          <span class="attr">target:</span> <span class="string">$&#123;&#123;</span> <span class="string">vars.SERVER_DEPLOY_PATH</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">strip_components:</span> <span class="number">3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Verify</span> <span class="string">deployment</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">appleboy/ssh-action@v1.0.3</span></span><br><span class="line">        <span class="attr">env:</span></span><br><span class="line">          <span class="attr">DEPLOY_PATH:</span> <span class="string">$&#123;&#123;</span> <span class="string">vars.SERVER_DEPLOY_PATH</span> <span class="string">&#125;&#125;</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">host:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SERVER_HOST</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">username:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SERVER_USER</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">key:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.SSH_PRIVATE_KEY</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">envs:</span> <span class="string">DEPLOY_PATH</span></span><br><span class="line">          <span class="attr">script:</span> <span class="string">test</span> <span class="string">-s</span> <span class="string">&quot;$DEPLOY_PATH/index.html&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>strip_components: 3</code> 会去掉 <code>repo/blog/public</code> 这三级目录，只把 <code>public/</code> 内的内容放进站点目录。缺少这个参数时，服务器上可能出现多余的 <code>repo/blog/public/</code> 嵌套目录。</p>
+<p>当前部署方式会先清理旧文件，再上传新文件，优点是不会残留已经从源码删除的页面；缺点是上传期间可能有短暂空窗。如果网站对连续可用性要求较高，可以进一步改成“上传到版本目录 → 校验 → 原子切换软链接 → 保留上一版本”的发布方式。</p>
+<p>站点验证文件、<code>robots.txt</code> 等额外文件也应在构建阶段复制到 <code>public/</code>，但不要在公开文章或工作流中写入真实验证码文件名。更简单的做法是把不含敏感信息的固定静态文件放在 Hexo 的 <code>source/</code> 下，让构建过程自动复制。</p>
+<h2 id="八、部署后的检查"><a href="#八、部署后的检查" class="headerlink" title="八、部署后的检查"></a>八、部署后的检查</h2><p>工作流成功不等于网站一定正常。至少还需要检查：</p>
+<ol>
+<li>Actions 中安装、构建、压图、清理、上传和验证步骤均成功；</li>
+<li>首页及一篇新文章可以访问，CSS、JavaScript 和图片没有出现 <code>404</code>；</li>
+<li>浏览器控制台没有资源路径或脚本错误；</li>
+<li>服务器上的 <code>index.html</code> 非空，文件属主和 Web 服务读取权限正确；</li>
+<li>图片优化日志中的输入、输出体积合理，没有意外放大文件；</li>
+<li>修改旧文章后，页面显示的更新时间与 Git 历史一致。</li>
+</ol>
+<p>如果部署失败，可以按阶段定位：</p>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>优先检查</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm ci</code> 失败</td>
+<td>Node.js 版本、锁文件是否同步、对等依赖参数</td>
+</tr>
+<tr>
+<td>文章时间异常</td>
+<td><code>fetch-depth</code> 是否为 <code>0</code>、<code>run.sh</code> 是否有执行权限</td>
+</tr>
+<tr>
+<td>图片步骤失败</td>
+<td><code>public/</code> 是否已生成、Sharp 是否正确安装、CI 内存是否充足</td>
+</tr>
+<tr>
+<td>SSH 连接失败</td>
+<td>Environment 是否正确、主机与用户是否匹配、公钥是否已授权</td>
+</tr>
+<tr>
+<td>上传成功但页面 404</td>
+<td><code>SERVER_DEPLOY_PATH</code>、<code>strip_components</code> 和 Web 根目录配置</td>
+</tr>
+<tr>
+<td>新页面存在但旧页面也残留</td>
+<td>清理步骤是否成功执行、部署用户是否有目录写权限</td>
+</tr>
+</tbody></table>
+<h2 id="九、安全要点"><a href="#九、安全要点" class="headerlink" title="九、安全要点"></a>九、安全要点</h2><ul>
+<li>工作流只保存 Secret 的名称，不保存任何真实值；</li>
+<li>为部署单独创建 SSH 密钥，不复用个人日常登录密钥；</li>
+<li>使用权限受限的部署用户，并把写权限限制在站点目录；</li>
+<li>不在命令中输出私钥、令牌或带凭据的 URL；</li>
+<li>对部署目录做非空和非根目录检查，避免变量配置错误扩大清理范围；</li>
+<li>GitHub Actions 和第三方 Action 使用明确版本，升级前先阅读变更说明；</li>
+<li>定期轮换部署密钥，成员或服务器发生变化时及时撤销旧公钥；</li>
+<li>生产 Environment 可以设置审批和分支保护，只允许受保护分支部署。</li>
+</ul>
+<p>完成这些配置后，日常发布只需要提交文章并推送到 <code>main</code>。构建环境、图片优化和文件上传都由流水线统一执行，服务器上也不需要保留完整源码或安装 Node.js。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/eb5041ff/">https://scnabla.github.io/posts/eb5041ff/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hexo/">Hexo</a><a class="post-meta__tags" href="/tags/GitHub-Actions/">GitHub Actions</a><a class="post-meta__tags" href="/tags/CI-CD/">CI/CD</a></div><div class="post-share"><div class="social-share" data-image="/web_image/covers/engineering.svg" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/69c3279c/" title="Git"><img class="cover" src="/web_image/covers/software-development.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Git</div></div><div class="info-2"><div class="info-item-1">用于记录Git在使用当中遇到的问题</div></div></div></a><a class="pagination-related  no-desc" href="/posts/86147ec3/" title="2026年计划"><img class="cover" src="/web_image/covers/life-notes.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">2026年计划</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">一、整体流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">二、为什么要自动化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%87%86%E5%A4%87%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%92%8C-GitHub-Environment"><span class="toc-number">3.</span> <span class="toc-text">三、准备服务器和 GitHub Environment</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA%E4%B8%93%E7%94%A8%E9%83%A8%E7%BD%B2%E7%94%A8%E6%88%B7"><span class="toc-number">3.1.</span> <span class="toc-text">1. 创建专用部署用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%85%8D%E7%BD%AE-Environment"><span class="toc-number">3.2.</span> <span class="toc-text">2. 配置 Environment</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%9B%BA%E5%AE%9A%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83"><span class="toc-number">4.</span> <span class="toc-text">四、固定构建环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%81%A2%E5%A4%8D%E6%96%87%E7%AB%A0%E7%9A%84%E6%96%87%E4%BB%B6%E6%97%B6%E9%97%B4"><span class="toc-number">5.</span> <span class="toc-text">五、恢复文章的文件时间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%BD%BF%E7%94%A8-Sharp-%E5%A2%9E%E9%87%8F%E4%BC%98%E5%8C%96%E5%9B%BE%E7%89%87"><span class="toc-number">6.</span> <span class="toc-text">六、使用 Sharp 增量优化图片</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%AE%8C%E6%95%B4%E7%9A%84%E8%84%B1%E6%95%8F%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">7.</span> <span class="toc-text">七、完整的脱敏工作流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E9%83%A8%E7%BD%B2%E5%90%8E%E7%9A%84%E6%A3%80%E6%9F%A5"><span class="toc-number">8.</span> <span class="toc-text">八、部署后的检查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E5%AE%89%E5%85%A8%E8%A6%81%E7%82%B9"><span class="toc-number">9.</span> <span class="toc-text">九、安全要点</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：照片水印工具，支持文字、Logo 与版权署名"/></a><div class="content"><a class="title" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名">光影题笺：照片水印工具，支持文字、Logo 与版权署名</a><time datetime="2026-10-14T16:07:05.000Z" title="发表于 2026-10-15 00:07:05">2026-10-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：统一布局架构与预览速度优化"/></a><div class="content"><a class="title" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化">光影题笺：统一布局架构与预览速度优化</a><time datetime="2026-10-13T15:52:37.000Z" title="发表于 2026-10-13 23:52:37">2026-10-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"><img src="/web_image/covers/life-notes.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"/></a><div class="content"><a class="title" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音">Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音</a><time datetime="2026-09-19T15:32:04.000Z" title="发表于 2026-09-19 23:32:04">2026-09-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置"><img src="/web_image/covers/ai-tools.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Codex的GitHub平台操作SKILL配置"/></a><div class="content"><a class="title" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置">Codex的GitHub平台操作SKILL配置</a><time datetime="2026-09-18T18:30:00.000Z" title="发表于 2026-09-19 02:30:00">2026-09-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/91c2cb30/" title="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理"><img src="/posts/91c2cb30/catlas-hub.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理"/></a><div class="content"><a class="title" href="/posts/91c2cb30/" title="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理">CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理</a><time datetime="2026-09-13T15:06:57.000Z" title="发表于 2026-09-13 23:06:57">2026-09-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/moments_bundle.js" defer></script></div></body></html>

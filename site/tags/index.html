@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>文章标签 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="专注嵌入式开发，记录 Linux 内核、U-Boot、设备驱动、RK 平台、PCB 设计与工程问题排查。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="文章标签">
+<meta property="og:url" content="https://scnabla.github.io/tags/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="专注嵌入式开发，记录 Linux 内核、U-Boot、设备驱动、RK 平台、PCB 设计与工程问题排查。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/web_image/avatar-s-circuit.png">
+<meta property="article:published_time" content="2026-10-07T15:24:56.517Z">
+<meta property="article:modified_time" content="2025-05-16T17:09:48.000Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="嵌入式开发">
+<meta property="article:tag" content="Linux 内核">
+<meta property="article:tag" content="U-Boot">
+<meta property="article:tag" content="设备驱动">
+<meta property="article:tag" content="RK 平台">
+<meta property="article:tag" content="PCB 设计">
+<meta property="article:tag" content="RTOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/web_image/avatar-s-circuit.png"><script type="application/ld+json"></script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/tags/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '文章标签',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'page'
+}</script><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20260809-5"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="page type-tags" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><h1 class="title-seo">文章标签</h1></header><main class="layout" id="content-inner"><div id="page"><div class="page-title">文章标签</div><div class="tag-cloud-list text-center"><a href="/tags/%E5%B0%8F%E6%8A%80%E5%B7%A7/" style="font-size: 1.35em; background-color: rgb(198, 79, 77);">小技巧</a><a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" style="font-size: 1.2em; background-color: rgb(88, 50, 50);">嵌入式</a><a href="/tags/linux/" style="font-size: 1.2em; background-color: rgb(84, 50, 142);">linux</a><a href="/tags/%E8%AE%B0%E5%BD%95/" style="font-size: 1.2em; background-color: rgb(199, 131, 62);">记录</a><a href="/tags/%E8%AE%A1%E5%88%92/" style="font-size: 1.2em; background-color: rgb(166, 97, 178);">计划</a><a href="/tags/codex/" style="font-size: 1.27em; background-color: rgb(127, 82, 140);">codex</a><a href="/tags/%E5%B7%A5%E5%85%B7/" style="font-size: 1.43em; background-color: rgb(198, 55, 159);">工具</a><a href="/tags/%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91/" style="font-size: 1.27em; background-color: rgb(98, 191, 195);">日常开发</a><a href="/tags/AI/" style="font-size: 1.5em; background-color: rgb(81, 194, 86);">AI</a><a href="/tags/Codex/" style="font-size: 1.35em; background-color: rgb(139, 196, 50);">Codex</a><a href="/tags/GitHub/" style="font-size: 1.2em; background-color: rgb(154, 111, 130);">GitHub</a><a href="/tags/Skill/" style="font-size: 1.27em; background-color: rgb(66, 50, 60);">Skill</a><a href="/tags/Git/" style="font-size: 1.27em; background-color: rgb(89, 143, 52);">Git</a><a href="/tags/PCB%E8%AE%BE%E8%AE%A1/" style="font-size: 1.2em; background-color: rgb(167, 109, 83);">PCB设计</a><a href="/tags/%E8%99%9A%E6%8B%9F%E6%9C%BA/" style="font-size: 1.2em; background-color: rgb(180, 61, 53);">虚拟机</a><a href="/tags/%E8%84%9A%E6%9C%AC/" style="font-size: 1.2em; background-color: rgb(50, 50, 136);">脚本</a><a href="/tags/%E5%85%89%E5%BD%B1%E6%8B%BE%E7%AC%BA/" style="font-size: 1.27em; background-color: rgb(172, 53, 92);">光影拾笺</a><a href="/tags/%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB/" style="font-size: 1.35em; background-color: rgb(154, 50, 144);">日常生活</a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/" style="font-size: 1.27em; background-color: rgb(162, 50, 63);">软件开发</a><a href="/tags/%E6%91%84%E5%BD%B1/" style="font-size: 1.27em; background-color: rgb(68, 183, 188);">摄影</a><a href="/tags/Windows/" style="font-size: 1.27em; background-color: rgb(58, 50, 111);">Windows</a><a href="/tags/Hexo/" style="font-size: 1.2em; background-color: rgb(102, 134, 59);">Hexo</a><a href="/tags/GitHub-Actions/" style="font-size: 1.2em; background-color: rgb(50, 100, 107);">GitHub Actions</a><a href="/tags/CI-CD/" style="font-size: 1.2em; background-color: rgb(50, 172, 50);">CI/CD</a></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：照片水印工具，支持文字、Logo 与版权署名"/></a><div class="content"><a class="title" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名">光影题笺：照片水印工具，支持文字、Logo 与版权署名</a><time datetime="2026-10-14T16:07:05.000Z" title="发表于 2026-10-15 00:07:05">2026-10-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：统一布局架构与预览速度优化"/></a><div class="content"><a class="title" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化">光影题笺：统一布局架构与预览速度优化</a><time datetime="2026-10-13T15:52:37.000Z" title="发表于 2026-10-13 23:52:37">2026-10-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"><img src="/web_image/covers/life-notes.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"/></a><div class="content"><a class="title" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音">Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音</a><time datetime="2026-09-19T15:32:04.000Z" title="发表于 2026-09-19 23:32:04">2026-09-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置"><img src="/web_image/covers/ai-tools.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Codex的GitHub平台操作SKILL配置"/></a><div class="content"><a class="title" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置">Codex的GitHub平台操作SKILL配置</a><time datetime="2026-09-18T18:30:00.000Z" title="发表于 2026-09-19 02:30:00">2026-09-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/91c2cb30/" title="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理"><img src="/posts/91c2cb30/catlas-hub.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理"/></a><div class="content"><a class="title" href="/posts/91c2cb30/" title="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理">CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理</a><time datetime="2026-09-13T15:06:57.000Z" title="发表于 2026-09-13 23:06:57">2026-09-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/moments_bundle.js" defer></script></div></body></html>

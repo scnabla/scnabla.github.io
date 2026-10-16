@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">生活随笔文章封面</title>
+  <desc id="desc">暖灰色背景上的纸张、光线与书写线条</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ded8ca"/>
+      <stop offset="1" stop-color="#f4f1ea"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" rx="32" fill="url(#bg)"/>
+  <circle cx="975" cy="120" r="190" fill="#c58b4a" opacity=".16"/>
+  <g transform="translate(770 135) rotate(4 165 205)">
+    <rect width="330" height="410" rx="18" fill="#fffdf8" stroke="#b9b2a4" stroke-width="5"/>
+    <path d="M58 100h215M58 155h215M58 210h165M58 300h215M58 355h132" stroke="#9abacb" stroke-width="7" stroke-linecap="round"/>
+    <path d="m205 280 90-86 28 30-91 86-41 12z" fill="#3d6f8e" opacity=".9"/>
+  </g>
+  <g fill="#24333d">
+    <text x="105" y="250" font-family="Segoe UI,Arial,sans-serif" font-size="34" letter-spacing="8" opacity=".68">NOTES &amp; LIFE</text>
+    <text x="105" y="345" font-family="Segoe UI,Arial,sans-serif" font-size="72" font-weight="700">日常与随笔</text>
+    <rect x="105" y="390" width="145" height="8" rx="4" fill="#c58b4a"/>
+    <text x="105" y="455" font-family="Segoe UI,Arial,sans-serif" font-size="30" opacity=".68">记录当下，也整理生活</text>
+  </g>
+</svg>

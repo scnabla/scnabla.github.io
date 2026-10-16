@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">AI 工具文章封面</title>
+  <desc id="desc">紫蓝色背景上的相连节点与对话提示符</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#24253f"/>
+      <stop offset="1" stop-color="#625a88"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" rx="32" fill="url(#bg)"/>
+  <g stroke="#c5c2df" stroke-width="5" opacity=".64">
+    <path d="m760 196 118-58 126 80-24 148-134 76-116-93z" fill="none"/>
+    <path d="m760 196 86 246m32-304-148 211m274-131-244-22m220 170-102-228m-32 304 158-224m-274 131 250 17" fill="none"/>
+    <g fill="#c58b4a" stroke="#f4f1ea">
+      <circle cx="760" cy="196" r="15"/><circle cx="878" cy="138" r="15"/><circle cx="1004" cy="218" r="15"/>
+      <circle cx="980" cy="366" r="15"/><circle cx="846" cy="442" r="15"/><circle cx="730" cy="349" r="15"/>
+    </g>
+  </g>
+  <g fill="#f4f1ea">
+    <text x="105" y="250" font-family="Segoe UI,Arial,sans-serif" font-size="34" letter-spacing="8" opacity=".76">AI &amp; TOOLING</text>
+    <text x="105" y="345" font-family="Segoe UI,Arial,sans-serif" font-size="72" font-weight="700">AI 与效率工具</text>
+    <rect x="105" y="390" width="145" height="8" rx="4" fill="#c58b4a"/>
+    <text x="105" y="455" font-family="Consolas,monospace" font-size="30" opacity=".78">prompt · agent · workflow</text>
+  </g>
+</svg>

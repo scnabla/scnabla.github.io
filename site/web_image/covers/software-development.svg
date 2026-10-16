@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">软件开发文章封面</title>
+  <desc id="desc">工程蓝背景上的代码编辑器、模块与流程连线</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#182735"/>
+      <stop offset="1" stop-color="#496f82"/>
+    </linearGradient>
+    <pattern id="dots" width="42" height="42" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="2" fill="#9abacb" opacity=".13"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="675" rx="32" fill="url(#bg)"/>
+  <rect width="1200" height="675" rx="32" fill="url(#dots)"/>
+  <g transform="translate(720 132)" fill="none" stroke="#cbd8de" stroke-width="5">
+    <rect width="350" height="330" rx="24" opacity=".9"/>
+    <path d="M0 62h350" opacity=".65"/>
+    <circle cx="30" cy="31" r="7" fill="#c58b4a" stroke="none"/>
+    <circle cx="55" cy="31" r="7" fill="#9abacb" stroke="none"/>
+    <circle cx="80" cy="31" r="7" fill="#f4f1ea" stroke="none"/>
+    <path d="m70 155-38 34 38 34m210-68 38 34-38 34m-83-91-46 114" opacity=".92"/>
+    <rect x="96" y="275" width="50" height="24" rx="6" fill="#c58b4a" stroke="none"/>
+    <rect x="158" y="275" width="76" height="24" rx="6" fill="#9abacb" stroke="none" opacity=".9"/>
+    <rect x="246" y="275" width="48" height="24" rx="6" fill="#f4f1ea" stroke="none" opacity=".8"/>
+  </g>
+  <g fill="#f4f1ea">
+    <text x="105" y="250" font-family="Segoe UI,Arial,sans-serif" font-size="34" letter-spacing="8" opacity=".76">SOFTWARE DEVELOPMENT</text>
+    <text x="105" y="345" font-family="Segoe UI,Arial,sans-serif" font-size="72" font-weight="700">软件与开发</text>
+    <rect x="105" y="390" width="145" height="8" rx="4" fill="#c58b4a"/>
+    <text x="105" y="455" font-family="Consolas,monospace" font-size="30" opacity=".78">code · architecture · tooling</text>
+  </g>
+</svg>

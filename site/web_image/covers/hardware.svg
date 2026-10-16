@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">硬件设计文章封面</title>
+  <desc id="desc">墨绿色背景上的电路板走线与芯片</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="1" x2="1" y2="0">
+      <stop stop-color="#163b3a"/>
+      <stop offset="1" stop-color="#35756f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" rx="32" fill="url(#bg)"/>
+  <g fill="none" stroke="#8ebeb2" stroke-width="5" opacity=".58">
+    <path d="M690 160h100l55 55h170m-325 95h140l55-55h175M690 460h115l70-70h185"/>
+    <circle cx="690" cy="160" r="11" fill="#c58b4a" stroke="none"/>
+    <circle cx="690" cy="310" r="11" fill="#c58b4a" stroke="none"/>
+    <circle cx="690" cy="460" r="11" fill="#c58b4a" stroke="none"/>
+  </g>
+  <g transform="translate(835 215)">
+    <rect width="190" height="190" rx="20" fill="#17302f" stroke="#d7e5de" stroke-width="6"/>
+    <rect x="52" y="52" width="86" height="86" rx="10" fill="#c58b4a" opacity=".9"/>
+    <path d="M30 0v-34m43 34v-34m44 34v-34m43 34v-34M30 190v34m43-34v34m44-34v34m43-34v34M0 30h-34M0 73h-34M0 117h-34M0 160h-34m224-130h34m-34 43h34m-34 44h34m-34 43h34" stroke="#d7e5de" stroke-width="6"/>
+  </g>
+  <g fill="#f4f1ea">
+    <text x="105" y="250" font-family="Segoe UI,Arial,sans-serif" font-size="34" letter-spacing="8" opacity=".76">HARDWARE DESIGN</text>
+    <text x="105" y="345" font-family="Segoe UI,Arial,sans-serif" font-size="72" font-weight="700">硬件与 PCB</text>
+    <rect x="105" y="390" width="145" height="8" rx="4" fill="#c58b4a"/>
+    <text x="105" y="455" font-family="Consolas,monospace" font-size="30" opacity=".78">power · pcb · bring-up</text>
+  </g>
+</svg>

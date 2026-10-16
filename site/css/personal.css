@@ -1,0 +1,341 @@
+:root {
+  --personal-blue: #3d6f8e;
+  --personal-blue-soft: #9abacb;
+  --personal-gold: #c58b4a;
+  --personal-paper: #f4f1ea;
+  --personal-night: #1b2028;
+  --personal-line: rgba(61,111,142,0.2);
+}
+#web_bg:before {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  content: '';
+  pointer-events: none;
+}
+#nav {
+  padding-right: max(24px, calc((100% - 1400px) / 2));
+  padding-left: max(24px, calc((100% - 1400px) / 2));
+}
+#page-header.not-top-img #nav,
+#page-header.nav-fixed #nav {
+  border-bottom: 1px solid var(--personal-line);
+  background: rgba(244,241,234,0.88);
+  box-shadow: 0 6px 18px rgba(27,32,40,0.08);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+#page-header.not-top-img #nav a:hover,
+#page-header.not-top-img #nav span.site-page:hover,
+#page-header.not-top-img #nav #toggle-menu:hover,
+#page-header.nav-fixed #nav a:hover,
+#page-header.nav-fixed #nav span.site-page:hover,
+#page-header.nav-fixed #nav #toggle-menu:hover,
+#page-header.not-top-img #nav #blog-info:hover .site-name,
+#page-header.nav-fixed #nav #blog-info:hover .site-name {
+  color: var(--personal-gold);
+}
+#nav .site-page:not(.child):after {
+  background-color: var(--personal-gold);
+}
+::selection {
+  color: #fff;
+  background: var(--personal-blue-soft);
+}
+#recent-posts > .recent-post-item,
+.card-widget,
+#page,
+#post {
+  border: 1px solid var(--personal-line);
+  box-shadow: 0 8px 24px rgba(27,32,40,0.06);
+}
+#recent-posts > .recent-post-item:hover,
+.card-widget:hover {
+  box-shadow: 0 12px 30px rgba(27,32,40,0.1);
+}
+.status-page {
+  color: var(--font-color);
+}
+.status-hero {
+  margin-bottom: 28px;
+  padding: 28px;
+  overflow: hidden;
+  border-radius: 14px;
+  color: #f4f1ea;
+  background: linear-gradient(135deg, var(--personal-night), var(--personal-blue));
+}
+.status-hero h2 {
+  margin: 4px 0 8px;
+  color: inherit;
+  font-size: 2rem;
+}
+.status-hero p {
+  margin: 0;
+}
+.status-hero time {
+  display: block;
+  margin-top: 16px;
+  color: rgba(244,241,234,0.72);
+  font-size: 12px;
+}
+.status-kicker {
+  color: var(--personal-blue-soft);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.status-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.status-metric {
+  padding: 18px;
+  border: 1px solid var(--personal-line);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+.status-metric strong {
+  display: block;
+  color: var(--personal-blue);
+  font-size: 1.7rem;
+  line-height: 1.2;
+}
+.status-metric span {
+  color: var(--meta-color);
+  font-size: 13px;
+}
+.status-panel {
+  margin-top: 18px;
+  padding: 22px;
+  border: 1px solid var(--personal-line);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+.status-panel h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.status-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.status-section-label {
+  margin: 0 0 3px;
+  color: var(--personal-gold);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+.status-website-panel .status-metrics {
+  margin-bottom: 12px;
+}
+.status-github-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.status-github-summary strong {
+  color: var(--personal-blue);
+  font-size: 1.7rem;
+}
+.status-github-summary span {
+  color: var(--meta-color);
+  font-size: 13px;
+}
+.status-github-summary a {
+  margin-left: auto;
+  font-size: 13px;
+}
+.status-github-graph {
+  --github-gap: clamp(1px, 0.2vw, 3px);
+  overflow: hidden;
+  padding: 4px 0 8px;
+}
+.status-github-months {
+  display: grid;
+  grid-template-columns: repeat(var(--github-weeks), minmax(0, 1fr));
+  gap: var(--github-gap);
+  width: calc(100% - 28px);
+  margin: 0 0 6px 28px;
+  color: var(--meta-color);
+  font-size: 10px;
+}
+.status-github-months span {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.status-github-body {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+.status-github-weekdays {
+  display: grid;
+  grid-template-rows: repeat(7, minmax(0, 1fr));
+  gap: var(--github-gap);
+  width: 22px;
+  color: var(--meta-color);
+  font-size: 9px;
+  line-height: 1;
+}
+.status-github-weekdays span:nth-child(1) {
+  grid-row: 2;
+}
+.status-github-weekdays span:nth-child(2) {
+  grid-row: 4;
+}
+.status-github-weekdays span:nth-child(3) {
+  grid-row: 6;
+}
+.status-github-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--github-weeks), minmax(0, 1fr));
+  grid-template-rows: repeat(7, auto);
+  gap: var(--github-gap);
+  min-width: 0;
+  width: 100%;
+}
+.status-github-week {
+  display: contents;
+}
+.github-contribution-day {
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  aspect-ratio: 1;
+  box-sizing: border-box;
+  border: 1px solid rgba(27,31,35,0.06);
+  border-radius: 2px;
+  background: #ebedf0;
+}
+.github-contribution-day[data-level='1'] {
+  background: #9be9a8;
+}
+.github-contribution-day[data-level='2'] {
+  background: #40c463;
+}
+.github-contribution-day[data-level='3'] {
+  background: #30a14e;
+}
+.github-contribution-day[data-level='4'] {
+  background: #216e39;
+}
+.status-github-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 10px;
+  color: var(--meta-color);
+  font-size: 10px;
+}
+.status-github-legend i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border: 1px solid rgba(27,31,35,0.06);
+  border-radius: 2px;
+  background: #ebedf0;
+}
+.status-github-legend i[data-level='1'] {
+  background: #9be9a8;
+}
+.status-github-legend i[data-level='2'] {
+  background: #40c463;
+}
+.status-github-legend i[data-level='3'] {
+  background: #30a14e;
+}
+.status-github-legend i[data-level='4'] {
+  background: #216e39;
+}
+.status-github-empty {
+  padding: 20px;
+  border: 1px dashed var(--personal-line);
+  border-radius: 10px;
+  text-align: center;
+}
+.status-github-empty p {
+  margin: 0 0 6px;
+}
+.status-note,
+.status-empty,
+.status-github-empty {
+  color: var(--meta-color);
+  font-size: 13px;
+}
+.type-shuoshuo #page > .page-title {
+  margin: 0 0 20px;
+  padding: 18px 22px;
+  border-left: 4px solid var(--personal-blue);
+  border-radius: 8px;
+  color: var(--text-highlight-color);
+  background: var(--card-bg);
+  box-shadow: var(--card-box-shadow);
+}
+[data-theme='dark'] {
+  --personal-line: rgba(154,186,203,0.18);
+}
+[data-theme='dark'] #page-header.not-top-img #nav,
+[data-theme='dark'] #page-header.nav-fixed #nav {
+  border-bottom-color: rgba(154,186,203,0.16);
+  background: rgba(27,32,40,0.88);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+}
+[data-theme='dark'] #web_bg {
+  background-image: url("/web_image/background-circuit-dark-harmonized-4k.webp") !important;
+}
+[data-theme='dark'] #web_bg:before {
+  background-color: transparent;
+}
+[data-theme='dark'] .github-contribution-day,
+[data-theme='dark'] .status-github-legend i {
+  border-color: rgba(240,246,252,0.05);
+  background: #161b22;
+}
+[data-theme='dark'] .github-contribution-day[data-level='1'],
+[data-theme='dark'] .status-github-legend i[data-level='1'] {
+  background: #0e4429;
+}
+[data-theme='dark'] .github-contribution-day[data-level='2'],
+[data-theme='dark'] .status-github-legend i[data-level='2'] {
+  background: #006d32;
+}
+[data-theme='dark'] .github-contribution-day[data-level='3'],
+[data-theme='dark'] .status-github-legend i[data-level='3'] {
+  background: #26a641;
+}
+[data-theme='dark'] .github-contribution-day[data-level='4'],
+[data-theme='dark'] .status-github-legend i[data-level='4'] {
+  background: #39d353;
+}
+@media screen and (max-width: 768px) {
+  #nav {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+  .status-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .status-hero {
+    padding: 22px;
+  }
+}
+@media screen and (max-width: 420px) {
+  .status-github-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .status-github-summary a {
+    margin-left: 0;
+  }
+}

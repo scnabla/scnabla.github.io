@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="CAtlas Hub 是一款面向项目管理与代码浏览的 VS Code 扩展，支持项目集合与别名切换、已打开文件目录树、非项目标签置后、工作区外文件提醒、增强函数大纲、个人 TODO 分类与定位，以及资源屏蔽和配置导入导出。它将常用操作集中到侧栏，帮助开发者在多项目、多文件场景下更方便地查找代码、跟踪任务和迁移配置。1.0.0 正式版已上线插件市场，并以 MIT 许可证开源。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理">
+<meta property="og:url" content="https://scnabla.github.io/posts/91c2cb30/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="CAtlas Hub 是一款面向项目管理与代码浏览的 VS Code 扩展，支持项目集合与别名切换、已打开文件目录树、非项目标签置后、工作区外文件提醒、增强函数大纲、个人 TODO 分类与定位，以及资源屏蔽和配置导入导出。它将常用操作集中到侧栏，帮助开发者在多项目、多文件场景下更方便地查找代码、跟踪任务和迁移配置。1.0.0 正式版已上线插件市场，并以 MIT 许可证开源。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/posts/91c2cb30/catlas-hub.svg">
+<meta property="article:published_time" content="2026-09-13T15:06:57.000Z">
+<meta property="article:modified_time" content="2026-10-16T18:11:42.320Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="小技巧">
+<meta property="article:tag" content="codex">
+<meta property="article:tag" content="工具">
+<meta property="article:tag" content="日常开发">
+<meta property="article:tag" content="AI">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/posts/91c2cb30/catlas-hub.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理",
+  "url": "https://scnabla.github.io/posts/91c2cb30/",
+  "image": "https://scnabla.github.io/posts/91c2cb30/catlas-hub.svg",
+  "datePublished": "2026-09-13T15:06:57.000Z",
+  "dateModified": "2026-10-16T18:11:42.320Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "scnabla",
+      "url": "https://scnabla.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/posts/91c2cb30/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20260809-5"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-09-13T15:06:57.000Z" title="发表于 2026-09-13 23:06:57">2026-09-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-16T18:11:42.320Z" title="更新于 2026-10-17 02:11:42">2026-10-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>CAtlas Hub 是一款面向代码工程浏览与管理的 VS Code 扩展，提供项目集合、已打开文件目录、增强函数大纲、个人 TODO 标记和配置导入导出等功能。目前，1.0.0 正式版已发布到 VS Code 插件市场和 GitHub，源码采用 MIT 许可证开放。</p>
+<p>开发这款扩展，起初是为了把分散在不同目录中的项目集中起来，用更直观的别名选择和打开。随着日常使用，需求逐渐延伸到项目打开之后：文件多了怎么找，长文件里的函数怎么定位，自己的待办如何不被工程原有的注释淹没。</p>
+<p>CAtlas Hub 希望把这些反复发生的小操作组织好，让“找项目、找文件、找函数、找待办”更顺手。它不替代编译器、调试器或语言扩展，而是补充日常项目管理和代码阅读的体验。</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><h3 id="在多个工程之间切换"><a href="#在多个工程之间切换" class="headerlink" title="在多个工程之间切换"></a>在多个工程之间切换</h3><p>主工程、驱动库、测试程序和参考源码往往分散在不同位置，目录名还可能带着版本号。把它们加入同一个集合，设置容易理解的别名，可以减少反复查找路径的操作。</p>
+<h3 id="同时阅读较多文件"><a href="#同时阅读较多文件" class="headerlink" title="同时阅读较多文件"></a>同时阅读较多文件</h3><p>标签越来越多，或者多个目录中都有同名文件时，单看标签名很难判断文件归属。通过已打开文件目录，可以看到当前正在阅读的文件及其目录关系，而不必在完整工程目录里重新寻找。</p>
+<h3 id="对照工作区外的参考代码"><a href="#对照工作区外的参考代码" class="headerlink" title="对照工作区外的参考代码"></a>对照工作区外的参考代码</h3><p>临时打开另一个版本的实现或其他工程中的文件时，容易把参考文件和当前项目文件混淆。外部文件提醒与非项目标签置后，可以提供额外的归属提示。</p>
+<h3 id="阅读函数较多的源码文件"><a href="#阅读函数较多的源码文件" class="headerlink" title="阅读函数较多的源码文件"></a>阅读函数较多的源码文件</h3><p>在函数、类型和条件编译分支之间反复跳转时，增强函数大纲可以帮助理解当前文件结构，并快速定位源码。</p>
+<h3 id="在大型或开源项目中跟踪自己的任务"><a href="#在大型或开源项目中跟踪自己的任务" class="headerlink" title="在大型或开源项目中跟踪自己的任务"></a>在大型或开源项目中跟踪自己的任务</h3><p>工程自带的 TODO 不一定是当前需要处理的任务。通过个人标识筛选，再按任务描述归类，可以优先找到自己添加的标记，把同一任务涉及的多个文件放在一起查看。</p>
+<h2 id="功能介绍"><a href="#功能介绍" class="headerlink" title="功能介绍"></a>功能介绍</h2><h3 id="项目集合与别名管理"><a href="#项目集合与别名管理" class="headerlink" title="项目集合与别名管理"></a>项目集合与别名管理</h3><p>常用文件夹和工作区可以加入项目集合，并设置别名、说明与标签。首次使用时，在侧栏选择“添加项目并创建集合”，即可完成集合和第一个项目的创建，不需要先编写配置文件。</p>
+<p>已有集合和项目别名支持右键修改，项目路径可以重新选择，也可以将项目移出集合。打开项目时，可以选择当前窗口或新窗口，并保存常用打开方式。</p>
+<h3 id="已打开文件目录与标签整理"><a href="#已打开文件目录与标签整理" class="headerlink" title="已打开文件目录与标签整理"></a>已打开文件目录与标签整理</h3><p>“已打开文件目录”位于资源管理器中，只读取当前窗口已经打开的普通文件，不扫描整个工程。连续的单层目录会合并显示，减少逐层展开的负担；点击文件条目会回到既有标签。</p>
+<p>目录默认展开，需要折叠时可以使用右键操作。相比完整工程目录，这个视图更关注“当前正在看哪些文件”。</p>
+<p>标签整理不强制改变项目内文件的顺序。启用“非项目标签自动移至末尾”后，插件会把工作区外文件、设置页等可安全处理的非项目标签放到后方，保留用户自己的项目阅读顺序。</p>
+<h3 id="工作区外文件提醒"><a href="#工作区外文件提醒" class="headerlink" title="工作区外文件提醒"></a>工作区外文件提醒</h3><p>对于不属于当前工作区的普通文件，插件提供前景色、<code>‼</code> 徽标、悬停路径和状态栏等提示，帮助区分正在编辑的文件与临时打开的参考文件。</p>
+<p>提醒用于辅助判断，不会禁止编辑，也不能代替对实际文件路径的确认。</p>
+<h3 id="增强函数大纲"><a href="#增强函数大纲" class="headerlink" title="增强函数大纲"></a>增强函数大纲</h3><p>增强函数大纲提供树状符号列表，支持筛选、排序和源码跳转。函数条目只显示名称，不把长参数列表挤进侧栏；点击后会在源码中提示定位位置，光标移动时也会同步标识当前函数。</p>
+<p>对于支持的 C&#x2F;C++ 场景，大纲会整理条件编译层级和部分重复符号，使结构更容易阅读。</p>
+<p>外观可以跟随 VS Code，也可以选择借鉴 Source Insight 阅读习惯的浅色或黑色预设。大纲模式支持仅原生、仅增强或同时使用，用户可以根据习惯选择。</p>
+<h3 id="个人-TODO-与任务分类"><a href="#个人-TODO-与任务分类" class="headerlink" title="个人 TODO 与任务分类"></a>个人 TODO 与任务分类</h3><p>设置一个简短个人标识后，可以通过编辑器右键“快速标记”添加注释，例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// TODO(dev): 添加串口超时处理</span></span><br><span class="line"><span class="comment">// FIXME(dev): 修复异常返回路径</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>dev</code> 只是示例，不需要使用真实姓名或邮箱。</p>
+<p>“代码 TODO”视图默认按任务描述分类。同一任务出现在多个文件中时，可以集中查看；添加标记时也能选择已有描述，减少相同任务被不同措辞拆开的情况。点击结果即可定位源码。</p>
+<p>除常见的 TODO、FIXME 等关键词外，还可以启用 DEBUG、NOTE、OPTIMIZE 等可选项，或添加简单自定义关键词。注释里的 <code>DEBUG</code> 可以作为标记，但 <code>#ifdef DEBUG</code> 不会仅因包含该单词就进入待办结果。</p>
+<p>默认只显示个人标记，需要查看工程已有标记时，可在设置中开启。更新时优先恢复本地缓存并检查变化，打开文档中的编辑优先响应，后台文件变化分批处理；同时保留完整更新入口。</p>
+<h3 id="资源屏蔽与恢复"><a href="#资源屏蔽与恢复" class="headerlink" title="资源屏蔽与恢复"></a>资源屏蔽与恢复</h3><p>在资源管理器中选择文件或目录，可以通过右键屏蔽资源，调整目录展示、搜索和文件监控的排除设置，也可以按扩展名屏蔽同类型文件。</p>
+<p>屏蔽不会删除实际文件。规则会处理父子目录的重复关系，需要恢复时，可以通过“管理&#x2F;取消屏蔽”入口操作。</p>
+<h3 id="集中配置与导入导出"><a href="#集中配置与导入导出" class="headerlink" title="集中配置与导入导出"></a>集中配置与导入导出</h3><p>常用设置集中在侧栏“配置”视图，选择后保存并应用，各分组可以折叠。</p>
+<p>插件区分当前工作区是否属于所选集合：集合内项目可以使用集合配置，其他项目使用个人默认值，界面会显示实际生效的设置来源。图标风格也可以在统一图标与原生风格之间切换。</p>
+<p>需要迁移时，可将项目集合导出为快照，再在另一台设备上导入。项目路径不同，可以在导入时调整基础目录。个人标识、部分外观偏好等本机设置不会随集合迁移。</p>
+<h2 id="兼容性与注意事项"><a href="#兼容性与注意事项" class="headerlink" title="兼容性与注意事项"></a>兼容性与注意事项</h2><h3 id="运行环境与语言支持"><a href="#运行环境与语言支持" class="headerlink" title="运行环境与语言支持"></a>运行环境与语言支持</h3><ul>
+<li>要求 VS Code 1.88.0 及以上，目前主要验证环境为 Windows；其他操作系统和真实远程、虚拟工作区尚未完成验证。</li>
+<li>增强函数大纲依赖对应语言扩展提供文档符号。例如 C&#x2F;C++ 工程需要语言扩展正常工作；语言解析没有结果时，增强大纲不能凭空恢复完整函数结构。</li>
+<li>TODO 只识别受支持语言中的注释语法，不开放任意正则表达式，也不保证识别所有历史文本编码。</li>
+</ul>
+<h3 id="界面能力边界"><a href="#界面能力边界" class="headerlink" title="界面能力边界"></a>界面能力边界</h3><ul>
+<li>VS Code 的公开扩展接口不能任意修改单个标签的完整背景、加粗标签文字或绘制分组边框，文件装饰的显示还会受到主题与相关设置影响。</li>
+<li>原生视图的隐藏和恢复受 VS Code 版本及可用命令限制。选择“仅增强”不代表所有版本都能自动隐藏原生大纲，必要时需按提示手动操作。</li>
+<li>已打开文件目录主要展示普通文件，设置页、Diff、Notebook 和自定义编辑器不会被当作普通目录文件展示。</li>
+</ul>
+<h3 id="扫描与性能边界"><a href="#扫描与性能边界" class="headerlink" title="扫描与性能边界"></a>扫描与性能边界</h3><ul>
+<li>超过 2 MiB 的源码文件默认跳过，其他文件继续处理。</li>
+<li>扫描受结果数量、缓存大小和并发限制，不承诺任意规模工程都能无限扫描。</li>
+<li>开启“显示项目已有标记”可能增加结果数量和扫描开销，大型或开源工程建议按实际需要使用。</li>
+</ul>
+<h3 id="数据、迁移与隐私"><a href="#数据、迁移与隐私" class="headerlink" title="数据、迁移与隐私"></a>数据、迁移与隐私</h3><ul>
+<li>TODO 是真实的源码注释，提交代码时也会被提交。1.0.0 没有提交前自动剥离功能，不能把它当作仅存在于本机的私人便签。</li>
+<li>TODO 缓存保存在本机工作区扩展存储中，包含文件位置与标记描述，不包含整份源码。共享扩展存储或日志前仍需注意隐私。</li>
+<li>集合迁移仅涉及项目入口和相关插件配置，不会复制源码、安装编译器或自动配置另一台电脑的开发环境。</li>
+<li>导出及迁移文件可能包含项目路径，共享前应检查内容；导出文件是静态快照，修改它不会实时改变已导入的集合。</li>
+<li>使用旧身份预览版的用户，应先阅读发布说明中的迁移要求，不要直接卸载旧版，也不要同时启用新旧扩展。</li>
+</ul>
+<h2 id="使用方式与下载地址"><a href="#使用方式与下载地址" class="headerlink" title="使用方式与下载地址"></a>使用方式与下载地址</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>在 VS Code 扩展视图中搜索 <strong>CAtlas Hub</strong>，确认发布者为 <strong>scnable</strong>，即可安装。也可以通过以下入口下载或查看源码：</p>
+<ul>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://marketplace.visualstudio.com/items?itemName=scnable.catlas-hub">VS Code 插件市场</a></li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/project-butler">GitHub 源码仓库</a></li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/project-butler/releases/tag/v1.0.0">1.0.0 安装包与发布说明</a></li>
+</ul>
+<p>从 GitHub 下载 <code>catlas-hub-1.0.0.vsix</code> 后，在 VS Code 扩展视图菜单中选择“从 VSIX 安装”，再按提示完成安装和窗口重载。</p>
+<h3 id="首次使用"><a href="#首次使用" class="headerlink" title="首次使用"></a>首次使用</h3><ol>
+<li>打开活动栏中的 CAtlas Hub，选择“添加项目并创建集合”，加入常用文件夹或工作区并设置别名。</li>
+<li>打开几份源码，在资源管理器中查看“已打开文件目录”。</li>
+<li>按需要在 CAtlas Hub 侧栏启用或调整增强函数大纲，确认对应语言扩展能够提供符号。</li>
+<li>在“配置 → 代码 TODO”中设置个人标识，通过编辑器右键添加一条快速标记，再到资源管理器的“代码 TODO”视图中查看。</li>
+<li>根据阅读习惯调整外部文件提醒、非项目标签置后和资源屏蔽等选项，不必一次开启全部功能。</li>
+</ol>
+<p>1.0.0 是正式发布的起点，后续会继续根据真实工程中的反馈改进稳定性、扫描体验和界面一致性。遇到问题或有功能建议，可以通过 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/project-butler/issues">GitHub Issues</a> 反馈；请描述使用场景与复现步骤，不要附带私密源码、凭据或未经处理的个人路径。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/91c2cb30/">https://scnabla.github.io/posts/91c2cb30/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%B0%8F%E6%8A%80%E5%B7%A7/">小技巧</a><a class="post-meta__tags" href="/tags/codex/">codex</a><a class="post-meta__tags" href="/tags/%E5%B7%A5%E5%85%B7/">工具</a><a class="post-meta__tags" href="/tags/%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91/">日常开发</a><a class="post-meta__tags" href="/tags/AI/">AI</a></div><div class="post-share"><div class="social-share" data-image="/posts/91c2cb30/catlas-hub.svg" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置"><img class="cover" src="/web_image/covers/ai-tools.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Codex的GitHub平台操作SKILL配置</div></div><div class="info-2"><div class="info-item-1">使用 safe-github-platform SKILL，通过 gh 检查身份和目标，按确认范围处理 Release、程序附件、PR、Issue 和 Actions，并核验实际结果。</div></div></div></a><a class="pagination-related" href="/posts/4fc5a6c4/" title="NetDriveGuard：SMB 网络盘断联残留处理与自动重连工具"><img class="cover" src="/web_image/covers/software-development.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">NetDriveGuard：SMB 网络盘断联残留处理与自动重连工具</div></div><div class="info-2"><div class="info-item-1">NetDriveGuard 是一款 Windows 托盘工具，针对 SMB网络盘断联后残留映射可能导致文件资源管理器卡顿或卡死的问题，按配置自动取消失效映射、恢复后重新连接，并提供运行状态查看与变化提醒。本文介绍相关问题案例、已实现功能、使用方法及注意事项。相关标签（SMB、Samba、网络盘断联、失效映射、文件资源管理器卡死、NAS、网络驱动器自动重连）</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.</span> <span class="toc-text">使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E5%A4%9A%E4%B8%AA%E5%B7%A5%E7%A8%8B%E4%B9%8B%E9%97%B4%E5%88%87%E6%8D%A2"><span class="toc-number">2.1.</span> <span class="toc-text">在多个工程之间切换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%97%B6%E9%98%85%E8%AF%BB%E8%BE%83%E5%A4%9A%E6%96%87%E4%BB%B6"><span class="toc-number">2.2.</span> <span class="toc-text">同时阅读较多文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%85%A7%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%A4%96%E7%9A%84%E5%8F%82%E8%80%83%E4%BB%A3%E7%A0%81"><span class="toc-number">2.3.</span> <span class="toc-text">对照工作区外的参考代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%85%E8%AF%BB%E5%87%BD%E6%95%B0%E8%BE%83%E5%A4%9A%E7%9A%84%E6%BA%90%E7%A0%81%E6%96%87%E4%BB%B6"><span class="toc-number">2.4.</span> <span class="toc-text">阅读函数较多的源码文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E5%A4%A7%E5%9E%8B%E6%88%96%E5%BC%80%E6%BA%90%E9%A1%B9%E7%9B%AE%E4%B8%AD%E8%B7%9F%E8%B8%AA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%BB%E5%8A%A1"><span class="toc-number">2.5.</span> <span class="toc-text">在大型或开源项目中跟踪自己的任务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">功能介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E9%9B%86%E5%90%88%E4%B8%8E%E5%88%AB%E5%90%8D%E7%AE%A1%E7%90%86"><span class="toc-number">3.1.</span> <span class="toc-text">项目集合与别名管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%B2%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95%E4%B8%8E%E6%A0%87%E7%AD%BE%E6%95%B4%E7%90%86"><span class="toc-number">3.2.</span> <span class="toc-text">已打开文件目录与标签整理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8C%BA%E5%A4%96%E6%96%87%E4%BB%B6%E6%8F%90%E9%86%92"><span class="toc-number">3.3.</span> <span class="toc-text">工作区外文件提醒</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A2%9E%E5%BC%BA%E5%87%BD%E6%95%B0%E5%A4%A7%E7%BA%B2"><span class="toc-number">3.4.</span> <span class="toc-text">增强函数大纲</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA-TODO-%E4%B8%8E%E4%BB%BB%E5%8A%A1%E5%88%86%E7%B1%BB"><span class="toc-number">3.5.</span> <span class="toc-text">个人 TODO 与任务分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E5%B1%8F%E8%94%BD%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="toc-number">3.6.</span> <span class="toc-text">资源屏蔽与恢复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E4%B8%AD%E9%85%8D%E7%BD%AE%E4%B8%8E%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA"><span class="toc-number">3.7.</span> <span class="toc-text">集中配置与导入导出</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">4.</span> <span class="toc-text">兼容性与注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83%E4%B8%8E%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81"><span class="toc-number">4.1.</span> <span class="toc-text">运行环境与语言支持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%95%8C%E9%9D%A2%E8%83%BD%E5%8A%9B%E8%BE%B9%E7%95%8C"><span class="toc-number">4.2.</span> <span class="toc-text">界面能力边界</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E4%B8%8E%E6%80%A7%E8%83%BD%E8%BE%B9%E7%95%8C"><span class="toc-number">4.3.</span> <span class="toc-text">扫描与性能边界</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E3%80%81%E8%BF%81%E7%A7%BB%E4%B8%8E%E9%9A%90%E7%A7%81"><span class="toc-number">4.4.</span> <span class="toc-text">数据、迁移与隐私</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F%E4%B8%8E%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80"><span class="toc-number">5.</span> <span class="toc-text">使用方式与下载地址</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">5.1.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E6%AC%A1%E4%BD%BF%E7%94%A8"><span class="toc-number">5.2.</span> <span class="toc-text">首次使用</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：照片水印工具，支持文字、Logo 与版权署名"/></a><div class="content"><a class="title" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名">光影题笺：照片水印工具，支持文字、Logo 与版权署名</a><time datetime="2026-10-14T16:07:05.000Z" title="发表于 2026-10-15 00:07:05">2026-10-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：统一布局架构与预览速度优化"/></a><div class="content"><a class="title" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化">光影题笺：统一布局架构与预览速度优化</a><time datetime="2026-10-13T15:52:37.000Z" title="发表于 2026-10-13 23:52:37">2026-10-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"><img src="/web_image/covers/life-notes.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"/></a><div class="content"><a class="title" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音">Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音</a><time datetime="2026-09-19T15:32:04.000Z" title="发表于 2026-09-19 23:32:04">2026-09-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置"><img src="/web_image/covers/ai-tools.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Codex的GitHub平台操作SKILL配置"/></a><div class="content"><a class="title" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置">Codex的GitHub平台操作SKILL配置</a><time datetime="2026-09-18T18:30:00.000Z" title="发表于 2026-09-19 02:30:00">2026-09-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/91c2cb30/" title="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理"><img src="/posts/91c2cb30/catlas-hub.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理"/></a><div class="content"><a class="title" href="/posts/91c2cb30/" title="CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理">CAtlas Hub：让 VS Code 里的项目管理与代码浏览更有条理</a><time datetime="2026-09-13T15:06:57.000Z" title="发表于 2026-09-13 23:06:57">2026-09-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/moments_bundle.js" defer></script></div></body></html>
