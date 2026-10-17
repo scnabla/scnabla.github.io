@@ -1,0 +1,311 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="Windows 连接键鼠、Ubuntu 作为 Deskflow 客户端时，通过 GNOME 扩展恢复锁屏控制，并配置 GDM 自动登录与 Deskflow 自启动，解决重启后停在登录界面的问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置">
+<meta property="og:url" content="https://scnabla.github.io/posts/6f73f959/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="Windows 连接键鼠、Ubuntu 作为 Deskflow 客户端时，通过 GNOME 扩展恢复锁屏控制，并配置 GDM 自动登录与 Deskflow 自启动，解决重启后停在登录界面的问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/web_image/covers/life-notes.svg">
+<meta property="article:published_time" content="2026-10-17T18:41:19.000Z">
+<meta property="article:modified_time" content="2026-10-17T18:41:20.000Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="工具">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Deskflow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/web_image/covers/life-notes.svg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置",
+  "url": "https://scnabla.github.io/posts/6f73f959/",
+  "image": "https://scnabla.github.io/web_image/covers/life-notes.svg",
+  "datePublished": "2026-10-17T18:41:19.000Z",
+  "dateModified": "2026-10-17T18:41:20.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "scnabla",
+      "url": "https://scnabla.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/posts/6f73f959/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20260809-5"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">26</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-17T18:41:19.000Z" title="发表于 2026-10-18 02:41:19">2026-10-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-17T18:41:20.000Z" title="更新于 2026-10-18 02:41:20">2026-10-18</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="使用环境与故障现象"><a href="#使用环境与故障现象" class="headerlink" title="使用环境与故障现象"></a>使用环境与故障现象</h2><p>两台电脑共用一套键鼠，键盘和鼠标实际连接在 Windows 上。Windows 运行 Deskflow 服务端，Ubuntu 运行客户端，通过局域网接收键鼠操作。</p>
+<p>本次配置环境：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>版本或状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Linux</td>
+<td>Ubuntu 26.04.1 LTS</td>
+</tr>
+<tr>
+<td>桌面</td>
+<td>GNOME Shell 50.1、Wayland</td>
+</tr>
+<tr>
+<td>Linux Deskflow</td>
+<td>Flatpak 版 1.27.0</td>
+</tr>
+<tr>
+<td>Windows Deskflow</td>
+<td>系统服务已运行，启动类型为自动</td>
+</tr>
+<tr>
+<td>锁屏扩展</td>
+<td>Allow Locked Remote Desktop 17</td>
+</tr>
+</tbody></table>
+<p>桌面正常使用时，键鼠可以跨电脑操作，但遇到了两个问题：</p>
+<ul>
+<li>Ubuntu 锁屏后，无法通过 Deskflow 输入密码，必须在 Linux 本机解锁才能恢复控制。</li>
+<li>Ubuntu 重启后停在首次登录界面，登录后自启动的 Deskflow 尚未运行。</li>
+</ul>
+<p>这两种情况分别通过允许锁屏远程控制、自动登录后启动 Deskflow 处理。配置完成后的日常使用测试正常。</p>
+<h2 id="锁屏时远程输入被-GNOME-阻止"><a href="#锁屏时远程输入被-GNOME-阻止" class="headerlink" title="锁屏时远程输入被 GNOME 阻止"></a>锁屏时远程输入被 GNOME 阻止</h2><p>检查用户会话日志：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">journalctl --user --since <span class="string">&#x27;1 hour ago&#x27;</span> --no-pager \</span><br><span class="line">  -g <span class="string">&#x27;remote desktop session|Session creation inhibited&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>故障期间反复出现：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Failed to create remote desktop session:</span><br><span class="line">GDBus.Error:org.freedesktop.DBus.Error.Failed: Session creation inhibited</span><br></pre></td></tr></table></figure>
+
+<p>Deskflow 在当前 Wayland 环境中通过桌面的远程控制接口接收输入。GNOME 锁屏时会限制远程访问，导致键鼠控制中断。Deskflow 项目记录了相同现象，参见<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/deskflow/deskflow/issues/7964">锁屏后无法控制客户端的问题记录</a>。</p>
+<h2 id="安装允许锁屏远程控制的扩展"><a href="#安装允许锁屏远程控制的扩展" class="headerlink" title="安装允许锁屏远程控制的扩展"></a>安装允许锁屏远程控制的扩展</h2><p><a target="_blank" rel="noopener external nofollow noreferrer" href="https://extensions.gnome.org/extension/4338/allow-locked-remote-desktop/">Allow Locked Remote Desktop</a> 用于允许 GNOME 在锁屏期间继续接受远程连接。本次安装的是支持 GNOME 50 的 17 版。</p>
+<p>扩展调整的是 GNOME 的远程访问限制，影响范围包括使用相关接口的其他远程控制程序。锁屏仍然保留，解锁仍需输入系统密码。实现可查看<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jikamens/allow-locked-remote-desktop">扩展源码</a>。</p>
+<h3 id="安装与启用"><a href="#安装与启用" class="headerlink" title="安装与启用"></a>安装与启用</h3><p>在 Ubuntu 已登录且未锁屏时，以当前桌面用户运行，不加 <code>sudo</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gdbus call --session \</span><br><span class="line">  --dest org.gnome.Shell.Extensions \</span><br><span class="line">  --object-path /org/gnome/Shell/Extensions \</span><br><span class="line">  --method org.gnome.Shell.Extensions.InstallRemoteExtension \</span><br><span class="line">  <span class="string">&#x27;allowlockedremotedesktop@kamens.us&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>桌面出现安装确认后完成安装。检查扩展状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gnome-extensions info allowlockedremotedesktop@kamens.us</span><br></pre></td></tr></table></figure>
+
+<p>本次安装后显示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Version: 17</span><br><span class="line">Enabled: Yes</span><br><span class="line">State: ACTIVE</span><br></pre></td></tr></table></figure>
+
+<p>若已安装但尚未启用，执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gnome-extensions <span class="built_in">enable</span> allowlockedremotedesktop@kamens.us</span><br></pre></td></tr></table></figure>
+
+<p>安装调用本次返回过 <code>NoReply</code>，但扩展实际已安装并启用。遇到此提示时，先检查扩展状态，再判断安装结果。</p>
+<p>日志中可检查启用记录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">journalctl --user --since <span class="string">&#x27;10 minutes ago&#x27;</span> --no-pager \</span><br><span class="line">  -g <span class="string">&#x27;Remote desktop connections while screen is locked&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>启用成功时出现：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Remote desktop connections while screen is locked are now ENABLED</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试锁屏控制"><a href="#测试锁屏控制" class="headerlink" title="测试锁屏控制"></a>测试锁屏控制</h3><p>在 Linux 桌面中触发锁屏，再从 Windows 将鼠标移入 Linux 屏幕，唤出密码框并输入 Linux 登录密码。Linux 的锁屏快捷键为 <code>Super+L</code>，普通 Windows 键盘上的 Super 对应 Win 键；若 Windows 截获 <code>Win+L</code>，可以从 Linux 桌面菜单锁屏。</p>
+<p>首次测试应保留本机解锁手段，例如必要时临时接入现有键盘。扩展启用后的功能以实际输入密码测试为准。</p>
+<h2 id="配置重启后的自动连接"><a href="#配置重启后的自动连接" class="headerlink" title="配置重启后的自动连接"></a>配置重启后的自动连接</h2><p>首次登录界面由 GDM 管理，GDM 是显示登录页面、启动用户桌面的程序。登录后的锁屏仍运行在用户桌面中，因此 Deskflow 和扩展可以继续工作；重启后的 GDM 登录界面尚未加载这些用户程序。</p>
+<p>本次采用以下启动流程：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Ubuntu 开机</span><br><span class="line">  → GDM 自动登录指定账户</span><br><span class="line">  → 进入 GNOME 桌面</span><br><span class="line">  → 自动启动 Deskflow 客户端</span><br><span class="line">  → 连接 Windows 服务端</span><br><span class="line">  → 接收键鼠操作</span><br></pre></td></tr></table></figure>
+
+<p>自动登录会让开机后的桌面直接可用，适用于能够接受这一访问方式的环境。本次未配置“自动登录后立即锁屏”脚本，也未修改既有锁屏策略。若磁盘加密要求在开机时输入解密密码，这套设置不能跳过磁盘解密。</p>
+<h3 id="启用-GDM-自动登录"><a href="#启用-GDM-自动登录" class="headerlink" title="启用 GDM 自动登录"></a>启用 GDM 自动登录</h3><p>先备份配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> -a /etc/gdm3/custom.conf \</span><br><span class="line">  <span class="string">&quot;/etc/gdm3/custom.conf.backup-<span class="subst">$(date +%Y%m%d-%H%M%S)</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>编辑文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudoedit /etc/gdm3/custom.conf</span><br></pre></td></tr></table></figure>
+
+<p>在已有的 <code>[daemon]</code> 段中设置以下两项，将 <code>your_username</code> 替换为实际登录用户名，可用 <code>whoami</code> 查询：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[daemon]</span></span><br><span class="line"><span class="attr">AutomaticLoginEnable</span> = <span class="literal">true</span></span><br><span class="line"><span class="attr">AutomaticLogin</span> = your_username</span><br></pre></td></tr></table></figure>
+
+<p>已有同名配置时修改原项，保留其他内容，避免重复添加 <code>[daemon]</code> 段或同名键。</p>
+<p>保存后在下次启动生效。当前正在工作时无需重启 GDM；重启显示管理器会中断桌面会话。</p>
+<h3 id="确认-Deskflow-登录后自启动"><a href="#确认-Deskflow-登录后自启动" class="headerlink" title="确认 Deskflow 登录后自启动"></a>确认 Deskflow 登录后自启动</h3><p>本次使用 Flatpak 版，先确认安装信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flatpak info org.deskflow.deskflow</span><br></pre></td></tr></table></figure>
+
+<p>在 Deskflow 中选择客户端模式，填写 Windows 服务端地址，并启用随图形界面启动核心进程的设置。先确认手动启动时能够连接，再配置登录自启动。</p>
+<p>用户自启动文件位于：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~/.config/autostart/deskflow.desktop</span><br></pre></td></tr></table></figure>
+
+<p>本次使用的内容：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Desktop Entry]</span></span><br><span class="line"><span class="attr">Type</span>=Application</span><br><span class="line"><span class="attr">Name</span>=Deskflow</span><br><span class="line"><span class="attr">Exec</span>=/usr/bin/flatpak run org.deskflow.deskflow</span><br><span class="line"><span class="attr">Terminal</span>=<span class="literal">false</span></span><br><span class="line"><span class="attr">X-GNOME-Autostart-enabled</span>=<span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>目录不存在时先创建，然后使用文本编辑器保存上述文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ~/.config/autostart</span><br></pre></td></tr></table></figure>
+
+<p>已有自启动项时检查并沿用，避免另建第二个启动相同程序的条目。本次检查确认已有条目有效，没有重复新增。</p>
+<h3 id="核查-Windows-服务"><a href="#核查-Windows-服务" class="headerlink" title="核查 Windows 服务"></a>核查 Windows 服务</h3><p>在 Windows PowerShell 中执行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Service</span> <span class="literal">-Name</span> Deskflow |</span><br><span class="line">    <span class="built_in">Select-Object</span> Name, Status, StartType</span><br></pre></td></tr></table></figure>
+
+<p>本次 Windows 端核查结果为运行中、自动启动，系统服务程序为 <code>deskflow-daemon.exe</code>。Windows 服务机制说明参见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/deskflow/deskflow/wiki/Workarounds">Deskflow 官方文档</a>。</p>
+<p>Windows 服务端运行和网络可达是 Linux 自动连接的前提。两台电脑同时冷启动、Windows 保持锁屏时的跨屏操作，需要按实际环境另外验证；本次结果不作这些场景的保证。</p>
+<h2 id="验证结果与适用范围"><a href="#验证结果与适用范围" class="headerlink" title="验证结果与适用范围"></a>验证结果与适用范围</h2><p>配置检查已确认：</p>
+<ul>
+<li>GNOME 扩展为 17 版，已启用且状态为 <code>ACTIVE</code>。</li>
+<li>GDM 自动登录已开启，账户设置正确。</li>
+<li>Linux Deskflow 登录自启动项已启用，使用现有客户端连接配置。</li>
+<li>Windows Deskflow 服务正在运行，启动类型为自动。</li>
+</ul>
+<p>配置后的实际使用反馈为测试正常。此次方案覆盖登录后锁屏的远程解锁，以及自动进入桌面后启动 Deskflow 的流程。断电恢复还取决于电脑是否自动开机；磁盘解密、网络尚未建立等阶段不在这套桌面配置的控制范围内。</p>
+<p>当前环境的空闲超时为 <code>0</code>，不会因闲置自动触发锁屏。可以通过以下命令检查本机值，按需要在系统设置中调整：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gsettings get org.gnome.desktop.session idle-delay</span><br><span class="line">gsettings get org.gnome.desktop.screensaver lock-enabled</span><br></pre></td></tr></table></figure>
+
+<p>自动登录与自动锁屏是独立设置。开启自动登录后，应确认实际的锁屏行为符合使用要求。</p>
+<h2 id="恢复原设置"><a href="#恢复原设置" class="headerlink" title="恢复原设置"></a>恢复原设置</h2><p>停止允许锁屏远程控制：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gnome-extensions <span class="built_in">disable</span> allowlockedremotedesktop@kamens.us</span><br></pre></td></tr></table></figure>
+
+<p>关闭自动登录时，在 <code>/etc/gdm3/custom.conf</code> 的 <code>[daemon]</code> 段中设置：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">AutomaticLoginEnable</span> = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>也可根据备份恢复原配置，恢复前核对备份之后是否还有其他需要保留的改动。关闭自动登录后，重启将重新停留在 GDM 登录界面，Deskflow 仍需进入用户桌面后启动。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/6f73f959/">https://scnabla.github.io/posts/6f73f959/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%B7%A5%E5%85%B7/">工具</a><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/Deskflow/">Deskflow</a></div><div class="post-share"><div class="social-share" data-image="/web_image/covers/life-notes.svg" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名"><img class="cover" src="/web_image/covers/software-development.svg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">光影题笺：照片水印工具，支持文字、Logo 与版权署名</div></div><div class="info-2"><div class="info-item-1">光影题笺是一款 Windows 本地照片水印工具，可添加文字、拍摄信息、品牌 Logo 和版权署名，支持网格定位、字号与颜色调整、三种边框样式及个人样式保存，提供 Windows x64 试用版下载。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">26</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%8E%AF%E5%A2%83%E4%B8%8E%E6%95%85%E9%9A%9C%E7%8E%B0%E8%B1%A1"><span class="toc-number">1.</span> <span class="toc-text">使用环境与故障现象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%81%E5%B1%8F%E6%97%B6%E8%BF%9C%E7%A8%8B%E8%BE%93%E5%85%A5%E8%A2%AB-GNOME-%E9%98%BB%E6%AD%A2"><span class="toc-number">2.</span> <span class="toc-text">锁屏时远程输入被 GNOME 阻止</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%85%81%E8%AE%B8%E9%94%81%E5%B1%8F%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6%E7%9A%84%E6%89%A9%E5%B1%95"><span class="toc-number">3.</span> <span class="toc-text">安装允许锁屏远程控制的扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E5%90%AF%E7%94%A8"><span class="toc-number">3.1.</span> <span class="toc-text">安装与启用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E9%94%81%E5%B1%8F%E6%8E%A7%E5%88%B6"><span class="toc-number">3.2.</span> <span class="toc-text">测试锁屏控制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E9%87%8D%E5%90%AF%E5%90%8E%E7%9A%84%E8%87%AA%E5%8A%A8%E8%BF%9E%E6%8E%A5"><span class="toc-number">4.</span> <span class="toc-text">配置重启后的自动连接</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E7%94%A8-GDM-%E8%87%AA%E5%8A%A8%E7%99%BB%E5%BD%95"><span class="toc-number">4.1.</span> <span class="toc-text">启用 GDM 自动登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AE%E8%AE%A4-Deskflow-%E7%99%BB%E5%BD%95%E5%90%8E%E8%87%AA%E5%90%AF%E5%8A%A8"><span class="toc-number">4.2.</span> <span class="toc-text">确认 Deskflow 登录后自启动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E6%9F%A5-Windows-%E6%9C%8D%E5%8A%A1"><span class="toc-number">4.3.</span> <span class="toc-text">核查 Windows 服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E7%BB%93%E6%9E%9C%E4%B8%8E%E9%80%82%E7%94%A8%E8%8C%83%E5%9B%B4"><span class="toc-number">5.</span> <span class="toc-text">验证结果与适用范围</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E5%8E%9F%E8%AE%BE%E7%BD%AE"><span class="toc-number">6.</span> <span class="toc-text">恢复原设置</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/6f73f959/" title="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置"><img src="/web_image/covers/life-notes.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置"/></a><div class="content"><a class="title" href="/posts/6f73f959/" title="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置">Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置</a><time datetime="2026-10-17T18:41:19.000Z" title="发表于 2026-10-18 02:41:19">2026-10-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：照片水印工具，支持文字、Logo 与版权署名"/></a><div class="content"><a class="title" href="/posts/73af4c79/" title="光影题笺：照片水印工具，支持文字、Logo 与版权署名">光影题笺：照片水印工具，支持文字、Logo 与版权署名</a><time datetime="2026-10-14T16:07:05.000Z" title="发表于 2026-10-15 00:07:05">2026-10-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化"><img src="/web_image/covers/software-development.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺：统一布局架构与预览速度优化"/></a><div class="content"><a class="title" href="/posts/c3f52dea/" title="光影题笺：统一布局架构与预览速度优化">光影题笺：统一布局架构与预览速度优化</a><time datetime="2026-10-13T15:52:37.000Z" title="发表于 2026-10-13 23:52:37">2026-10-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"><img src="/web_image/covers/life-notes.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音"/></a><div class="content"><a class="title" href="/posts/272da6ff/" title="Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音">Ubuntu 26.04 安装 Fcitx5、Rime 与雾凇拼音</a><time datetime="2026-09-19T15:32:04.000Z" title="发表于 2026-09-19 23:32:04">2026-09-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置"><img src="/web_image/covers/ai-tools.svg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Codex的GitHub平台操作SKILL配置"/></a><div class="content"><a class="title" href="/posts/c83a190f/" title="Codex的GitHub平台操作SKILL配置">Codex的GitHub平台操作SKILL配置</a><time datetime="2026-09-18T18:30:00.000Z" title="发表于 2026-09-19 02:30:00">2026-09-19</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/moments_bundle.js" defer></script></div></body></html>
