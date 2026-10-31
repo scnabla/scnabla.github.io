@@ -1,0 +1,413 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Ghostty 与 WezTerm 配置 Starship 色块箭头提示符 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="在 Linux Ghostty、Bash 和 Windows WezTerm、PowerShell 中启用 Starship Pastel Powerline 提示符，使用 JetBrains Mono Nerd Font 显示色块箭头、目录和 Git 信息，记录用户目录安装、配置位置、生效方法与恢复步骤。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符">
+<meta property="og:url" content="https://scnabla.github.io/posts/e326aeae/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="在 Linux Ghostty、Bash 和 Windows WezTerm、PowerShell 中启用 Starship Pastel Powerline 提示符，使用 JetBrains Mono Nerd Font 显示色块箭头、目录和 Git 信息，记录用户目录安装、配置位置、生效方法与恢复步骤。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/web_image/covers/life-notes.png">
+<meta property="article:published_time" content="2026-10-31T16:39:58.000Z">
+<meta property="article:modified_time" content="2026-10-31T17:21:31.000Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="工具">
+<meta property="article:tag" content="终端">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/web_image/covers/life-notes.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Ghostty 与 WezTerm 配置 Starship 色块箭头提示符",
+  "url": "https://scnabla.github.io/posts/e326aeae/",
+  "image": "https://scnabla.github.io/web_image/covers/life-notes.png",
+  "datePublished": "2026-10-31T16:39:58.000Z",
+  "dateModified": "2026-10-31T17:21:31.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "scnabla",
+      "url": "https://scnabla.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/posts/e326aeae/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Ghostty 与 WezTerm 配置 Starship 色块箭头提示符',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/email-contact.css?v=1"><link rel="stylesheet" href="/css/site-search.css?v=1"><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20261031-2"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">Ghostty 与 WezTerm 配置 Starship 色块箭头提示符</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Ghostty 与 WezTerm 配置 Starship 色块箭头提示符</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-31T16:39:58.000Z" title="发表于 2026-11-01 00:39:58">2026-11-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-31T17:21:31.000Z" title="更新于 2026-11-01 01:21:31">2026-11-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="当前配置"><a href="#当前配置" class="headerlink" title="当前配置"></a>当前配置</h2><p>命令行中的色块和箭头由 Starship 提示符生成。Bash 在显示命令输入位置时调用 Starship，Ghostty 使用 Nerd Font 字体显示箭头与图标。</p>
+<p>2026 年 11 月 1 日的个人配置如下：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>配置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>终端</td>
+<td>Ghostty</td>
+</tr>
+<tr>
+<td>Shell</td>
+<td>Bash</td>
+</tr>
+<tr>
+<td>提示符程序</td>
+<td>Starship 1.27.0</td>
+</tr>
+<tr>
+<td>提示符预设</td>
+<td>Pastel Powerline</td>
+</tr>
+<tr>
+<td>字体</td>
+<td>JetBrainsMono Nerd Font Mono</td>
+</tr>
+<tr>
+<td>字号</td>
+<td>14</td>
+</tr>
+<tr>
+<td>终端配色</td>
+<td>Monokai Classic</td>
+</tr>
+</tbody></table>
+<p>当前在 Pastel Powerline 基础上将附加信息合并到一行，显示在主提示符上方。主提示符按时间、用户名、完整路径排列，路径后直接输入命令。Git、开发环境和 Docker 均无信息时，上方信息行隐藏。时间位于主提示符最左端，显示为 <code>HH:MM</code>，不带心形符号。Git 和开发工具信息按当前目录显示。预设要求安装并启用 Nerd Font，参见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://starship.rs/presets/pastel-powerline">Starship 官方预设说明</a>。</p>
+<h2 id="文件位置"><a href="#文件位置" class="headerlink" title="文件位置"></a>文件位置</h2><table>
+<thead>
+<tr>
+<th>文件或目录</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>~/.local/bin/starship</code></td>
+<td>Starship 可执行文件</td>
+</tr>
+<tr>
+<td><code>~/.config/starship.toml</code></td>
+<td>提示符预设与个性化设置</td>
+</tr>
+<tr>
+<td><code>~/.bashrc</code></td>
+<td>Bash 启动时加载 Starship</td>
+</tr>
+<tr>
+<td><code>~/.config/ghostty/config.ghostty</code></td>
+<td>Ghostty 字体和外观</td>
+</tr>
+<tr>
+<td><code>~/.local/share/fonts/JetBrainsMonoNerdFont/</code></td>
+<td>用户字体目录</td>
+</tr>
+<tr>
+<td><code>~/.local/state/terminal-style-backups/20261101-003954/</code></td>
+<td>启用前的 Bash 和 Ghostty 配置备份</td>
+</tr>
+</tbody></table>
+<p>程序和字体均安装在用户目录中。</p>
+<h2 id="安装-Starship"><a href="#安装-Starship" class="headerlink" title="安装 Starship"></a>安装 Starship</h2><p>本机使用 Linux x86_64 的官方预编译程序。以下命令下载与本次安装一致的 1.27.0 版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /tmp/starship-install</span><br><span class="line">curl -fL https://github.com/starship/starship/releases/download/v1.27.0/starship-x86_64-unknown-linux-musl.tar.gz -o /tmp/starship-install/starship.tar.gz</span><br><span class="line">tar -xzf /tmp/starship-install/starship.tar.gz -C /tmp/starship-install</span><br><span class="line"><span class="built_in">mkdir</span> -p ~/.local/bin</span><br><span class="line">install -m 755 /tmp/starship-install/starship ~/.local/bin/starship</span><br><span class="line">~/.local/bin/starship --version</span><br></pre></td></tr></table></figure>
+
+<p>程序来自 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/starship/starship/releases">Starship 官方发布页</a>。这组命令对应 x86_64 架构。</p>
+<h2 id="安装并选择字体"><a href="#安装并选择字体" class="headerlink" title="安装并选择字体"></a>安装并选择字体</h2><p>下载 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip">Nerd Fonts 的 JetBrains Mono 字体包</a>，安装等宽版本的常规、粗体、斜体与粗斜体：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">curl -fL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip -o /tmp/JetBrainsMono.zip</span><br><span class="line"><span class="built_in">mkdir</span> -p ~/.local/share/fonts/JetBrainsMonoNerdFont</span><br><span class="line">unzip -o /tmp/JetBrainsMono.zip JetBrainsMonoNerdFontMono-Regular.ttf JetBrainsMonoNerdFontMono-Bold.ttf JetBrainsMonoNerdFontMono-Italic.ttf JetBrainsMonoNerdFontMono-BoldItalic.ttf -d ~/.local/share/fonts/JetBrainsMonoNerdFont</span><br><span class="line">fc-cache -f ~/.local/share/fonts/JetBrainsMonoNerdFont</span><br><span class="line">fc-match <span class="string">&#x27;JetBrainsMono Nerd Font Mono&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>字体匹配结果中的字体族名称为 <code>JetBrainsMono Nerd Font Mono</code>。在 <code>~/.config/ghostty/config.ghostty</code> 中设置：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">font-family</span> = JetBrainsMo<span class="literal">no</span> Nerd Font Mo<span class="literal">no</span></span><br><span class="line"><span class="attr">font-size</span> = <span class="number">14</span></span><br></pre></td></tr></table></figure>
+
+<p>保留原有的 Monokai Classic 配色、背景不透明度、窗口留白和快捷键。</p>
+<h2 id="生成色块箭头配置"><a href="#生成色块箭头配置" class="headerlink" title="生成色块箭头配置"></a>生成色块箭头配置</h2><p>创建配置目录并生成预设：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ~/.config</span><br><span class="line">~/.local/bin/starship preset pastel-powerline -o ~/.config/starship.toml</span><br></pre></td></tr></table></figure>
+
+<p>该命令写入完整的预设配置。后续个性化修改直接编辑 <code>~/.config/starship.toml</code>，再次生成预设会覆盖这个文件。</p>
+<p>主提示符和附加信息均使用色块，附加信息的文字使用深色 <code>#1e1e2e</code>：</p>
+<table>
+<thead>
+<tr>
+<th>区域</th>
+<th>颜色</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户名</td>
+<td><code>#9A348E</code></td>
+</tr>
+<tr>
+<td>工作目录</td>
+<td><code>#DA627D</code></td>
+</tr>
+<tr>
+<td>Git 信息背景</td>
+<td><code>#FCA17D</code></td>
+</tr>
+<tr>
+<td>开发环境背景</td>
+<td><code>#86BBD8</code></td>
+</tr>
+<tr>
+<td>Docker 信息背景</td>
+<td><code>#06969A</code></td>
+</tr>
+<tr>
+<td>时间</td>
+<td><code>#33658A</code></td>
+</tr>
+</tbody></table>
+<p>目录配置为：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[directory]</span></span><br><span class="line"><span class="attr">style</span> = <span class="string">&quot;bg:#DA627D&quot;</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&quot;[ $path ]($style)&quot;</span></span><br><span class="line"><span class="attr">truncation_length</span> = <span class="number">0</span></span><br><span class="line"><span class="attr">truncate_to_repo</span> = <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p><code>truncation_length = 0</code> 取消目录层数限制，<code>truncate_to_repo = false</code> 关闭 Git 仓库路径截短。提示符显示完整目录层级，用户主目录用 <code>~</code> 表示，不再显示表示省略的 <code>…/</code>。预设还在 <code>[directory.substitutions]</code> 中将 Documents、Downloads、Music、Pictures 替换成图标；希望保留文字目录名时，删除对应替换项。</p>
+<h2 id="附加信息与主提示符分行显示"><a href="#附加信息与主提示符分行显示" class="headerlink" title="附加信息与主提示符分行显示"></a>附加信息与主提示符分行显示</h2><p>信息齐全时的布局如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Git 分支及状态  Node.js 版本  Docker 上下文</span><br><span class="line">时间 ▶ 用户名 ▶ 完整路径 ▶ 输入命令</span><br></pre></td></tr></table></figure>
+
+<p>Git、开发环境和 Docker 项目没有内容时，隐藏对应名称与内容。整条信息行都没有内容时，连同换行一起隐藏。普通目录显示一行主提示符，有附加信息时显示两行；整组前另留一个空行。窗口过窄或内容过长时仍会自动换行。</p>
+<p>生成预设后，将 <code>~/.config/starship.toml</code> 顶部的 <code>format</code> 替换为以下配置，并将全局 <code>add_newline</code> 设为 <code>true</code>：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">format</span> = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">(([ Git$git_branch$git_status ](fg:#1e1e2e bg:#FCA17D))\</span></span><br><span class="line"><span class="string">([$c$elixir$elm$golang$gradle$haskell$java$julia$maven$nodejs$python$bun$nim$rust$scala ](fg:#1e1e2e bg:#86BBD8))\</span></span><br><span class="line"><span class="string">([ Docker$docker_context ](fg:#1e1e2e bg:#06969A))</span></span><br><span class="line"><span class="string">)\</span></span><br><span class="line"><span class="string">$time\</span></span><br><span class="line"><span class="string">[](fg:#33658A bg:#9A348E)\</span></span><br><span class="line"><span class="string">$username\</span></span><br><span class="line"><span class="string">[](fg:#9A348E bg:#DA627D)\</span></span><br><span class="line"><span class="string">$directory\</span></span><br><span class="line"><span class="string">[](fg:#DA627D) \</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="attr">add_newline</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>外层括号将附加信息和换行放在同一组，内部三个括号组分别控制 Git、开发环境和 Docker 的名称与内容。整组无内容时不产生信息行。时间、用户名和完整路径始终保持在同一条主提示符中。<code>add_newline = true</code> 在整组提示符前增加一个空行，与上一条命令的输出分开。条件分组语法见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://starship.rs/config/#conditional-format-strings">Starship 配置说明</a>。</p>
+<p>在原有模块设置中，将信息行的 <code>style</code> 设置为深色文字和对应背景色：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th><code>style</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>git_branch</code>、<code>git_status</code></td>
+<td><code>&quot;fg:#1e1e2e bg:#FCA17D&quot;</code></td>
+</tr>
+<tr>
+<td><code>c</code>、<code>elixir</code>、<code>elm</code>、<code>golang</code>、<code>gradle</code>、<code>haskell</code>、<code>java</code>、<code>julia</code>、<code>maven</code>、<code>nodejs</code>、<code>python</code>、<code>bun</code>、<code>nim</code>、<code>rust</code>、<code>scala</code></td>
+<td><code>&quot;fg:#1e1e2e bg:#86BBD8&quot;</code></td>
+</tr>
+<tr>
+<td><code>docker_context</code></td>
+<td><code>&quot;fg:#1e1e2e bg:#06969A&quot;</code></td>
+</tr>
+</tbody></table>
+<p><code>fg:</code> 指定文字颜色，<code>bg:</code> 指定背景颜色。Git 使用橙色背景，开发环境使用浅蓝色背景，Docker 使用青色背景；类别名称与内容采用相同背景，空项目连同色块一起隐藏。主提示符的时间、用户名和路径继续使用色块，时间色块左侧使用平直边缘，路径色块右侧以箭头收尾，后留一个空格直接输入命令，中间保留箭头分隔。</p>
+<h3 id="色块文字留白"><a href="#色块文字留白" class="headerlink" title="色块文字留白"></a>色块文字留白</h3><p>每个色块的内容左右各保留一个空格，宽度随内容变化，整组提示符保持左对齐。附加信息色块的外侧留白由顶部 <code>format</code> 统一提供，内部模块只保留内容之间的分隔空格。</p>
+<p>在现有配置段内修改以下字段，保留其余设置：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[username]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ $user ]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[git_branch]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ $symbol $branch]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[git_status]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ $all_status$ahead_behind]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[docker_context]</span></span><br><span class="line"><span class="attr">symbol</span> = <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ $symbol $context]($style)&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>开发工具直接显示名称与版本，例如 <code>Node.js v24.21.0</code>、<code>Go v1.26.0</code>，不使用笼统的“环境”标签。Python 项目同样显示 <code>Python</code> 和版本号；版本号由当前 Shell 可用的解释器决定，激活虚拟环境后显示该环境的 Python 版本。其他工具的版本号由当前目录对应的工具输出决定。各模块的 <code>format</code> 设置如下，顶部格式负责整组最后的一个空格：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[c]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ C ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[elixir]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Elixir ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[elm]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Elm ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[golang]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Go ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[gradle]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Gradle ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[haskell]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Haskell ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[java]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Java ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[julia]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Julia ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[maven]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Maven ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[nodejs]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Node.js ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[python]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Python ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[bun]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Bun ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[nim]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Nim ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[rust]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Rust ($version)]($style)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="section">[scala]</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ Scala ($version)]($style)&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>时间和目录继续使用原有的左右各一个空格。</p>
+<p>将文件末尾 <code>[time]</code> 段设置为：</p>
+<figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[time]</span></span><br><span class="line"><span class="attr">disabled</span> = <span class="literal">false</span></span><br><span class="line"><span class="attr">time_format</span> = <span class="string">&quot;%R&quot;</span></span><br><span class="line"><span class="attr">style</span> = <span class="string">&quot;bg:#33658A&quot;</span></span><br><span class="line"><span class="attr">format</span> = <span class="string">&#x27;[ $time ]($style)&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>format</code> 只保留时间和两侧空格。保存后，下一次显示提示符时采用新配置。</p>
+<h2 id="接入-Bash"><a href="#接入-Bash" class="headerlink" title="接入 Bash"></a>接入 Bash</h2><p>在 <code>~/.bashrc</code> 末尾加入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Starship 色块箭头提示符</span></span><br><span class="line"><span class="keyword">if</span> [ -x <span class="string">&quot;<span class="variable">$HOME</span>/.local/bin/starship&quot;</span> ]; <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">export</span> PATH=<span class="string">&quot;<span class="variable">$HOME</span>/.local/bin:<span class="variable">$PATH</span>&quot;</span></span><br><span class="line">    <span class="built_in">eval</span> <span class="string">&quot;<span class="subst">$(starship init bash)</span>&quot;</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>这段配置将用户程序目录加入当前 Shell 的 PATH，并初始化 Starship。初始化放在原有提示符配置之后，原来的 <code>PS1</code> 赋值保留在文件中。</p>
+<h2 id="让现有终端生效"><a href="#让现有终端生效" class="headerlink" title="让现有终端生效"></a>让现有终端生效</h2><p>在 Ghostty 中按 <code>Ctrl+Shift+R</code> 重载字体配置，再执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>新建 Ghostty 标签页也会加载 Bash 配置。Starship 只改变提示符，分屏、选中复制和全屏快捷键继续使用现有终端设置。</p>
+<p>配置检查命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bash -n ~/.bashrc</span><br><span class="line">ghostty +validate-config</span><br><span class="line">~/.local/bin/starship --version</span><br><span class="line">fc-match <span class="string">&#x27;JetBrainsMono Nerd Font Mono&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Windows-WezTerm-与-PowerShell"><a href="#Windows-WezTerm-与-PowerShell" class="headerlink" title="Windows WezTerm 与 PowerShell"></a>Windows WezTerm 与 PowerShell</h2><p>Windows 使用 PowerShell 7.6.9 和 Starship 1.27.0，与 Linux 共用相同内容的 <code>starship.toml</code>。提示符布局、颜色、完整路径和空行规则保持一致，工具版本按 Windows 当前环境显示。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>Windows 路径</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>程序</td>
+<td><code>%LOCALAPPDATA%\Programs\Starship\starship.exe</code></td>
+</tr>
+<tr>
+<td>提示符配置</td>
+<td><code>%USERPROFILE%\.config\starship.toml</code></td>
+</tr>
+<tr>
+<td>PowerShell 初始化</td>
+<td><code>$PROFILE</code>，当前为用户文档目录下的 <code>PowerShell\Microsoft.PowerShell_profile.ps1</code></td>
+</tr>
+<tr>
+<td>WezTerm 配置</td>
+<td><code>%USERPROFILE%\.config\wezterm\wezterm.lua</code></td>
+</tr>
+<tr>
+<td>字体</td>
+<td><code>%USERPROFILE%\.config\wezterm\fonts\</code></td>
+</tr>
+</tbody></table>
+<p>程序使用 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/starship/starship/releases/download/v1.27.0/starship-x86_64-pc-windows-msvc.zip">Starship 1.27.0 的 Windows x86_64 压缩包</a>，将其中的 <code>starship.exe</code> 放到上表程序目录。把已完成个性化设置的 <code>starship.toml</code> 复制到 Windows 对应位置。</p>
+<p>在 PowerShell 7 的 <code>$PROFILE</code> 中添加：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Starship prompt</span></span><br><span class="line"><span class="variable">$starshipDir</span> = <span class="built_in">Join-Path</span> <span class="variable">$env:LOCALAPPDATA</span> <span class="string">&#x27;Programs\Starship&#x27;</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">Test-Path</span> (<span class="built_in">Join-Path</span> <span class="variable">$starshipDir</span> <span class="string">&#x27;starship.exe&#x27;</span>)) &#123;</span><br><span class="line">    <span class="keyword">if</span> ((<span class="variable">$env:PATH</span> <span class="operator">-split</span> <span class="string">&#x27;;&#x27;</span>) <span class="operator">-notcontains</span> <span class="variable">$starshipDir</span>) &#123; <span class="variable">$env:PATH</span> = <span class="string">&quot;<span class="variable">$starshipDir</span>;<span class="variable">$env:PATH</span>&quot;</span> &#125;</span><br><span class="line">    <span class="built_in">Invoke-Expression</span> (&amp; (<span class="built_in">Join-Path</span> <span class="variable">$starshipDir</span> <span class="string">&#x27;starship.exe&#x27;</span>) init powershell)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段配置只向当前 PowerShell 进程的 PATH 加入程序目录。PowerShell 7 和 Windows PowerShell 5.1 使用不同的配置目录，此处配置用于 WezTerm 当前默认启动的 PowerShell 7。</p>
+<p>将 JetBrainsMono Nerd Font Mono 的常规、粗体、斜体与粗斜体四个 <code>.ttf</code> 文件放入 WezTerm 配置旁的 <code>fonts</code> 目录，在 <code>wezterm.lua</code> 中设置：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">config</span>.font_dirs = &#123; wezterm.config_dir .. <span class="string">&#x27;/fonts&#x27;</span> &#125;</span><br><span class="line"><span class="built_in">config</span>.font = wezterm.font(<span class="string">&#x27;JetBrainsMono Nerd Font Mono&#x27;</span>)</span><br><span class="line"><span class="built_in">config</span>.font_size = <span class="number">12</span></span><br></pre></td></tr></table></figure>
+
+<p>WezTerm 直接从指定目录加载字体，保留现有字号 12 和标签栏的 Microsoft YaHei UI 字体。字体目录配置见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://wezterm.org/config/lua/config/font_dirs.html">WezTerm 官方说明</a>。</p>
+<p>按 <code>Ctrl+Shift+R</code> 重载 WezTerm 配置，再按 <code>Ctrl+Shift+T</code> 新建标签页。已有 PowerShell 7 会话可执行以下命令载入提示符：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">. <span class="variable">$PROFILE</span></span><br></pre></td></tr></table></figure>
+
+<p>Windows 配置备份位于 <code>%LOCALAPPDATA%\terminal-style-backups\20261101-011232\</code>。迁移时同时保留 Starship 程序、提示符配置、PowerShell 初始化设置和 WezTerm 字体目录。</p>
+<h2 id="日常调整与恢复"><a href="#日常调整与恢复" class="headerlink" title="日常调整与恢复"></a>日常调整与恢复</h2><p>调整色块、显示内容和路径长度时编辑 <code>~/.config/starship.toml</code>；调整字体、字号和终端背景时编辑 Ghostty 配置。</p>
+<p>恢复普通 Bash 提示符时，删除 <code>~/.bashrc</code> 末尾的 Starship 初始化代码块，然后新建一个标签页。恢复原来的内置字体时，删除 Ghostty 中的 <code>font-family</code> 这一行，再按 <code>Ctrl+Shift+R</code> 重载。</p>
+<p>启用前的两个配置文件保存在 <code>~/.local/state/terminal-style-backups/20261101-003954/</code>。整体恢复备份会同时覆盖备份之后对同一文件做出的修改。</p>
+<p>两端终端的外观、鼠标操作和统一快捷键记录在<a href="/posts/f238c/">个人终端美化配置</a>。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/e326aeae/">https://scnabla.github.io/posts/e326aeae/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%B7%A5%E5%85%B7/">工具</a><a class="post-meta__tags" href="/tags/%E7%BB%88%E7%AB%AF/">终端</a></div><div class="post-share"><div class="social-share" data-image="/web_image/covers/life-notes.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/f238c/" title="Windows WezTerm 与 Linux Ghostty 的个人终端美化配置"><img class="cover" src="/web_image/covers/life-notes.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Windows WezTerm 与 Linux Ghostty 的个人终端美化配置</div></div><div class="info-2"><div class="info-item-1">记录 Windows WezTerm 与 Linux Ghostty 的个人终端配置，包括 Catppuccin Mocha 和 Monokai Classic 配色、字体字号、背景图片、窗格高亮、选中复制，以及两端统一的分屏和窗口操作快捷键。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:scnabla@163.com" rel="external nofollow noreferrer" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%93%E5%89%8D%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">当前配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%BD%8D%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">文件位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-Starship"><span class="toc-number">3.</span> <span class="toc-text">安装 Starship</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%B9%B6%E9%80%89%E6%8B%A9%E5%AD%97%E4%BD%93"><span class="toc-number">4.</span> <span class="toc-text">安装并选择字体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E8%89%B2%E5%9D%97%E7%AE%AD%E5%A4%B4%E9%85%8D%E7%BD%AE"><span class="toc-number">5.</span> <span class="toc-text">生成色块箭头配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%8A%A0%E4%BF%A1%E6%81%AF%E4%B8%8E%E4%B8%BB%E6%8F%90%E7%A4%BA%E7%AC%A6%E5%88%86%E8%A1%8C%E6%98%BE%E7%A4%BA"><span class="toc-number">6.</span> <span class="toc-text">附加信息与主提示符分行显示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%89%B2%E5%9D%97%E6%96%87%E5%AD%97%E7%95%99%E7%99%BD"><span class="toc-number">6.1.</span> <span class="toc-text">色块文字留白</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A5%E5%85%A5-Bash"><span class="toc-number">7.</span> <span class="toc-text">接入 Bash</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A9%E7%8E%B0%E6%9C%89%E7%BB%88%E7%AB%AF%E7%94%9F%E6%95%88"><span class="toc-number">8.</span> <span class="toc-text">让现有终端生效</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Windows-WezTerm-%E4%B8%8E-PowerShell"><span class="toc-number">9.</span> <span class="toc-text">Windows WezTerm 与 PowerShell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A5%E5%B8%B8%E8%B0%83%E6%95%B4%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="toc-number">10.</span> <span class="toc-text">日常调整与恢复</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"/></a><div class="content"><a class="title" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符">Ghostty 与 WezTerm 配置 Starship 色块箭头提示符</a><time datetime="2026-10-31T16:39:58.000Z" title="发表于 2026-11-01 00:39:58">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/f238c/" title="Windows WezTerm 与 Linux Ghostty 的个人终端美化配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows WezTerm 与 Linux Ghostty 的个人终端美化配置"/></a><div class="content"><a class="title" href="/posts/f238c/" title="Windows WezTerm 与 Linux Ghostty 的个人终端美化配置">Windows WezTerm 与 Linux Ghostty 的个人终端美化配置</a><time datetime="2026-10-31T16:35:22.000Z" title="发表于 2026-11-01 00:35:22">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复"><img src="/web_image/covers/problem-solving.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GitHub 历史贡献不显示的排查与恢复"/></a><div class="content"><a class="title" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复">GitHub 历史贡献不显示的排查与恢复</a><time datetime="2026-10-31T15:22:16.000Z" title="发表于 2026-10-31 23:22:16">2026-10-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"><img src="/web_image/covers/ai-tools.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"/></a><div class="content"><a class="title" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署">Qwen3-TTS 与 IndexTTS 2.5 单目录部署</a><time datetime="2026-10-19T17:14:25.000Z" title="发表于 2026-10-20 01:14:25">2026-10-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/6f73f959/" title="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置"/></a><div class="content"><a class="title" href="/posts/6f73f959/" title="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置">Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置</a><time datetime="2026-10-17T18:41:19.000Z" title="发表于 2026-10-18 02:41:19">2026-10-18</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/email-contact.js?v=1" defer></script><script src="/js/site-search.js?v=1" defer></script><script src="/js/moments_bundle.js" defer></script></div></body></html>
