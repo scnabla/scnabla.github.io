@@ -339,3 +339,31 @@
     margin-left: 0;
   }
 }
+img[src*='/web_image/covers/'],
+img[data-src*='/web_image/covers/'] {
+  object-fit: contain !important;
+}
+#recent-posts .recent-post-item .post_cover:has(img[src*='/web_image/covers/']),
+#recent-posts .recent-post-item .post_cover:has(img[data-src*='/web_image/covers/']) {
+  aspect-ratio: 1672/941;
+  height: auto;
+  align-self: center;
+  background: #edf0f2;
+}
+#recent-posts .recent-post-item .post_cover:has(img[src*='/web_image/covers/']) a,
+#recent-posts .recent-post-item .post_cover:has(img[data-src*='/web_image/covers/']) a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#recent-posts .recent-post-item .post_cover:has(img[src*='/web_image/covers/']) .post-bg,
+#recent-posts .recent-post-item .post_cover:has(img[data-src*='/web_image/covers/']) .post-bg {
+  display: block;
+  border-radius: 0;
+  transform: scale(0.9090909091);
+  background: #fff;
+}
+#recent-posts .recent-post-item:hover .post_cover img[src*='/web_image/covers/'],
+#recent-posts .recent-post-item:hover .post_cover img[data-src*='/web_image/covers/'] {
+  transform: scale(1);
+}

@@ -1,0 +1,285 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GitHub 历史贡献不显示的排查与恢复 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="GitHub 旧邮箱重新关联并验证后，历史提交已显示正确作者，个人主页的贡献日历却仍有空缺。记录通过临时切换默认分支补回 230 条贡献的操作，以及邮箱、提交记录和恢复数量的核对方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub 历史贡献不显示的排查与恢复">
+<meta property="og:url" content="https://scnabla.github.io/posts/8965c14c/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="GitHub 旧邮箱重新关联并验证后，历史提交已显示正确作者，个人主页的贡献日历却仍有空缺。记录通过临时切换默认分支补回 230 条贡献的操作，以及邮箱、提交记录和恢复数量的核对方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/web_image/covers/problem-solving.png">
+<meta property="article:published_time" content="2026-10-31T15:22:16.000Z">
+<meta property="article:modified_time" content="2026-10-31T16:01:23.000Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="日常开发">
+<meta property="article:tag" content="GitHub">
+<meta property="article:tag" content="Git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/web_image/covers/problem-solving.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "GitHub 历史贡献不显示的排查与恢复",
+  "url": "https://scnabla.github.io/posts/8965c14c/",
+  "image": "https://scnabla.github.io/web_image/covers/problem-solving.png",
+  "datePublished": "2026-10-31T15:22:16.000Z",
+  "dateModified": "2026-10-31T16:01:23.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "scnabla",
+      "url": "https://scnabla.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/posts/8965c14c/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GitHub 历史贡献不显示的排查与恢复',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/email-contact.css?v=1"><link rel="stylesheet" href="/css/site-search.css?v=1"><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20261031-2"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">GitHub 历史贡献不显示的排查与恢复</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">GitHub 历史贡献不显示的排查与恢复</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-31T15:22:16.000Z" title="发表于 2026-10-31 23:22:16">2026-10-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-31T16:01:23.000Z" title="更新于 2026-11-01 00:01:23">2026-11-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>调整 GitHub 用户名和仓库名称后，个人主页的绿色贡献日历出现了大量空缺。仓库中的代码和提交记录仍然存在。</p>
+<p>排查发现，私有博客仓库中有 230 条历史提交使用的旧邮箱没有关联到当前账号。添加并验证邮箱后，GitHub 已将这些提交的作者识别为当前账号，但等待超过 24 小时，日历仍未补回相应贡献。</p>
+<p>2026 年 10 月 31 日，临时切换仓库默认分支并恢复后，这 230 条历史贡献全部重新出现。</p>
+<h2 id="恢复操作"><a href="#恢复操作" class="headerlink" title="恢复操作"></a>恢复操作</h2><h3 id="确认邮箱、分支和权限"><a href="#确认邮箱、分支和权限" class="headerlink" title="确认邮箱、分支和权限"></a>确认邮箱、分支和权限</h3><p>操作前已确认：</p>
+<ul>
+<li>旧邮箱已在 <code>Settings → Emails</code> 中添加并完成验证。</li>
+<li>历史提交的作者已经关联到当前 GitHub 账号。</li>
+<li>缺失的提交都在默认分支 <code>main</code> 的历史中，仓库不是 Fork。</li>
+<li>当前账号具有仓库管理员权限。</li>
+<li>个人主页已开启 <code>Contribution settings → Private contributions</code>，允许显示私有仓库的贡献数量。</li>
+</ul>
+<p>私有贡献只公开每天的数量，不公开仓库内容。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.github.com/en/account-and-profile/how-tos/contribution-settings/manage-visibility-settings-for-private-contributions-and-achievements">GitHub 设置说明</a></p>
+<p>切换默认分支会改变仓库默认展示的分支和新拉取请求的默认目标。多人协作仓库应先协调操作时间，并检查分支保护、正在运行的任务及依赖默认分支的工具。本次操作时没有开放的拉取请求，也没有正在运行的部署。</p>
+<h3 id="切换默认分支后恢复"><a href="#切换默认分支后恢复" class="headerlink" title="切换默认分支后恢复"></a>切换默认分支后恢复</h3><p>GitHub 社区有针对同类问题的建议：创建一个与 <code>main</code> 指向同一提交的临时分支，将其设为默认分支，再切回 <code>main</code>。本次按这一建议操作后恢复了计数；这是社区方法的一次成功记录，不保证对其他情况同样有效。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/orgs/community/discussions/210682">相关讨论</a></p>
+<p>本次通过 GitHub API 执行：</p>
+<ol>
+<li>记录 <code>main</code> 当前的完整提交编号。</li>
+<li>创建一个唯一命名的临时分支，使其指向同一个提交。</li>
+<li>核对两个分支的提交编号一致。</li>
+<li>将仓库默认分支从 <code>main</code> 切换到临时分支。</li>
+<li>等待约 20 秒，将默认分支恢复为 <code>main</code>。</li>
+<li>确认默认分支已恢复，且临时分支没有新增提交，再删除临时分支。</li>
+<li>检查 <code>main</code> 的提交编号是否保持不变，并重新查询贡献日历。</li>
+</ol>
+<p>原 <code>main</code> 分支始终保留，名称和提交编号都没有改变。临时分支指向已有提交，不修改文件，也不重写历史。</p>
+<p>脚本在发生异常时也会检查并尝试恢复默认分支，只有确认恢复成功后才删除临时分支。</p>
+<h2 id="恢复结果"><a href="#恢复结果" class="headerlink" title="恢复结果"></a>恢复结果</h2><p>2026 年 10 月 31 日 23:19:05，默认分支恢复为 <code>main</code>，临时分支已删除；23:20:26，三个年份的贡献数量核对完成。时间均为北京时间。</p>
+<table>
+<thead>
+<tr>
+<th>年份</th>
+<th align="right">切换前贡献总数</th>
+<th align="right">切换后贡献总数</th>
+<th align="right">补回数量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2024</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">7</td>
+</tr>
+<tr>
+<td>2025</td>
+<td align="right">2</td>
+<td align="right">63</td>
+<td align="right">61</td>
+</tr>
+<tr>
+<td>2026</td>
+<td align="right">144</td>
+<td align="right">306</td>
+<td align="right">162</td>
+</tr>
+<tr>
+<td>补回数量合计</td>
+<td align="right">—</td>
+<td align="right">—</td>
+<td align="right">230</td>
+</tr>
+</tbody></table>
+<p>各年份增加的数量与旧邮箱对应的缺失提交数完全一致。表中的总数包含 GitHub 计入日历的其他活动，2026 年数据截止于本次检查时。</p>
+<p>2025 年的公开日历和 API 返回的贡献总数均为 63，其中私有贡献为 61。操作结束后，仓库仍只保留 <code>main</code> 分支，文件和原有本地修改均未改变。</p>
+<h2 id="排查依据"><a href="#排查依据" class="headerlink" title="排查依据"></a>排查依据</h2><h3 id="从历史提交中查找旧邮箱"><a href="#从历史提交中查找旧邮箱" class="headerlink" title="从历史提交中查找旧邮箱"></a>从历史提交中查找旧邮箱</h3><p>在仓库目录查看提交的作者日期和邮箱：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span> --all --format=<span class="string">&#x27;%h %aI %an &lt;%ae&gt; %s&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><code>%aI</code> 是作者日期，<code>%ae</code> 是作者邮箱。GitHub 个人主页按作者日期统计提交，查看旧贡献时应选择对应年份。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.github.com/en/account-and-profile/reference/profile-contributions-reference">GitHub 贡献统计规则</a></p>
+<p>本次统计到旧邮箱对应的 230 条提交均为非合并提交。确认旧邮箱后，在 <code>Settings → Emails</code> 添加并验证，再检查提交作者是否已关联到当前账号。</p>
+<h3 id="检查提交作者是否已经恢复"><a href="#检查提交作者是否已经恢复" class="headerlink" title="检查提交作者是否已经恢复"></a>检查提交作者是否已经恢复</h3><p>使用已登录的 GitHub CLI 查询历史提交。将 <code>OWNER</code>、<code>REPO</code> 和 <code>COMMIT_SHA</code> 分别替换为仓库所有者、仓库名称和提交编号：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gh api repos/OWNER/REPO/commits/COMMIT_SHA --jq <span class="string">&#x27;&#123;sha, email: .commit.author.email, account: .author.login&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>添加邮箱前，旧邮箱对应提交的 <code>account</code> 为 <code>null</code>。完成邮箱验证后，230 条提交均返回当前账号名。</p>
+<p>GitHub 官方说明，补充历史提交使用的邮箱后，日历会重新计算，更新可能需要最多 24 小时。本次在等待超过 24 小时后仍有缺失，才继续尝试恢复操作。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.github.com/en/account-and-profile/how-tos/contribution-settings/troubleshooting-missing-contributions">官方排查文档</a></p>
+<h3 id="对照日历数量"><a href="#对照日历数量" class="headerlink" title="对照日历数量"></a>对照日历数量</h3><p>邮箱关联恢复后，2025 年的 61 条提交已经能在 <code>main</code> 中查到，作者账号也正确。但当时个人主页全年仍只有 2 次贡献，GraphQL API 返回的私有贡献数量 <code>restrictedContributionsCount</code> 为 0。</p>
+<p>临时切换默认分支后，公开日历变为 63 次，私有贡献数量变为 61。这个差值确认了缺失的提交已经补回。</p>
+<p>仓库首页的贡献者列表和 <code>Insights → Contributors</code> 与个人主页日历采用不同的统计规则。检查个人日历是否恢复，应核对对应年份的日历数量。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/orgs/community/discussions/209302">GitHub 社区说明</a></p>
+<h2 id="本次未奏效的尝试"><a href="#本次未奏效的尝试" class="headerlink" title="本次未奏效的尝试"></a>本次未奏效的尝试</h2><p>以下为切换默认分支之前的尝试记录，两项操作后都没有观察到历史贡献补回。</p>
+<table>
+<thead>
+<tr>
+<th>尝试</th>
+<th>当时的结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关闭再开启个人主页的 <code>Private contributions</code></td>
+<td>刷新页面后，缺失的贡献仍未出现</td>
+</tr>
+<tr>
+<td>使用已验证的旧邮箱推送一条空提交</td>
+<td>新提交的作者识别正确，但 2025 年日历仍只有 2 次贡献，缺失的 61 条没有补回</td>
+</tr>
+</tbody></table>
+<p>空提交未修改文件，提交信息中的 <code>[skip ci]</code> 跳过了由 <code>push</code> 触发的博客部署。<a target="_blank" rel="noopener external nofollow noreferrer" href="https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs">GitHub 跳过工作流说明</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/8965c14c/">https://scnabla.github.io/posts/8965c14c/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91/">日常开发</a><a class="post-meta__tags" href="/tags/GitHub/">GitHub</a><a class="post-meta__tags" href="/tags/Git/">Git</a></div><div class="post-share"><div class="social-share" data-image="/web_image/covers/problem-solving.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"><img class="cover" src="/web_image/covers/ai-tools.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Qwen3-TTS 与 IndexTTS 2.5 单目录部署</div></div><div class="info-2"><div class="info-item-1">在 Windows 11、RTX 3060 12GB 上部署 Qwen3-TTS 1.7B 与 IndexTTS 2.5，将 Python、模型、缓存、音色和音频集中到 D 盘同一目录，记录独立环境配置、启动脚本、网页保存问题及中文生成实测。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:scnabla@163.com" rel="external nofollow noreferrer" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E7%8E%B0%E8%B1%A1"><span class="toc-number">1.</span> <span class="toc-text">问题现象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E6%93%8D%E4%BD%9C"><span class="toc-number">2.</span> <span class="toc-text">恢复操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AE%E8%AE%A4%E9%82%AE%E7%AE%B1%E3%80%81%E5%88%86%E6%94%AF%E5%92%8C%E6%9D%83%E9%99%90"><span class="toc-number">2.1.</span> <span class="toc-text">确认邮箱、分支和权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%87%E6%8D%A2%E9%BB%98%E8%AE%A4%E5%88%86%E6%94%AF%E5%90%8E%E6%81%A2%E5%A4%8D"><span class="toc-number">2.2.</span> <span class="toc-text">切换默认分支后恢复</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E7%BB%93%E6%9E%9C"><span class="toc-number">3.</span> <span class="toc-text">恢复结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5%E4%BE%9D%E6%8D%AE"><span class="toc-number">4.</span> <span class="toc-text">排查依据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4%E4%B8%AD%E6%9F%A5%E6%89%BE%E6%97%A7%E9%82%AE%E7%AE%B1"><span class="toc-number">4.1.</span> <span class="toc-text">从历史提交中查找旧邮箱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E6%8F%90%E4%BA%A4%E4%BD%9C%E8%80%85%E6%98%AF%E5%90%A6%E5%B7%B2%E7%BB%8F%E6%81%A2%E5%A4%8D"><span class="toc-number">4.2.</span> <span class="toc-text">检查提交作者是否已经恢复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%85%A7%E6%97%A5%E5%8E%86%E6%95%B0%E9%87%8F"><span class="toc-number">4.3.</span> <span class="toc-text">对照日历数量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E6%AC%A1%E6%9C%AA%E5%A5%8F%E6%95%88%E7%9A%84%E5%B0%9D%E8%AF%95"><span class="toc-number">5.</span> <span class="toc-text">本次未奏效的尝试</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复"><img src="/web_image/covers/problem-solving.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GitHub 历史贡献不显示的排查与恢复"/></a><div class="content"><a class="title" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复">GitHub 历史贡献不显示的排查与恢复</a><time datetime="2026-10-31T15:22:16.000Z" title="发表于 2026-10-31 23:22:16">2026-10-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"><img src="/web_image/covers/ai-tools.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"/></a><div class="content"><a class="title" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署">Qwen3-TTS 与 IndexTTS 2.5 单目录部署</a><time datetime="2026-10-19T17:14:25.000Z" title="发表于 2026-10-20 01:14:25">2026-10-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/6f73f959/" title="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置"/></a><div class="content"><a class="title" href="/posts/6f73f959/" title="Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置">Deskflow 在 Ubuntu 上的锁屏控制与开机自动连接配置</a><time datetime="2026-10-17T18:41:19.000Z" title="发表于 2026-10-18 02:41:19">2026-10-18</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/73af4c79/" title="光影题笺照片水印工具使用指南"><img src="/web_image/covers/software-development.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺照片水印工具使用指南"/></a><div class="content"><a class="title" href="/posts/73af4c79/" title="光影题笺照片水印工具使用指南">光影题笺照片水印工具使用指南</a><time datetime="2026-10-14T16:07:05.000Z" title="发表于 2026-10-15 00:07:05">2026-10-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/c3f52dea/" title="光影题笺的统一布局与预览性能优化"><img src="/web_image/covers/software-development.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="光影题笺的统一布局与预览性能优化"/></a><div class="content"><a class="title" href="/posts/c3f52dea/" title="光影题笺的统一布局与预览性能优化">光影题笺的统一布局与预览性能优化</a><time datetime="2026-10-13T15:52:37.000Z" title="发表于 2026-10-13 23:52:37">2026-10-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/email-contact.js?v=1" defer></script><script src="/js/site-search.js?v=1" defer></script><script src="/js/moments_bundle.js" defer></script></div></body></html>
