@@ -1,0 +1,45 @@
+.email-contact {
+  box-sizing: border-box;
+  width: min(360px, calc(100% - 32px));
+  padding: 28px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--card-bg, #fff);
+  color: var(--font-color, #333);
+  box-shadow: 0 12px 48px #0003;
+}
+.email-contact::backdrop { background: #0007; }
+.email-contact h2 { margin: 0 0 20px; font-size: 22px; }
+.email-contact-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  padding: 4px 8px;
+  color: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
+.email-contact-address {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #8886;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+}
+.email-contact-actions { display: flex; gap: 12px; margin-top: 20px; }
+.email-contact-actions > * {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  background: #2878a5;
+  color: #fff;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.email-contact :focus-visible { outline: 2px solid #49b1f5; outline-offset: 3px; }
+.email-contact-status { min-height: 24px; margin: 12px 0 0; font-size: 14px; }
