@@ -1,0 +1,332 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux Ghostty 外观与窗格快捷键配置 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="Linux Ghostty 的独立配置指南，说明 Nerd Font 字体、Monokai Classic 配色、背景图片、选中复制、分屏与窗格大小快捷键，并区分终端外观和 Bash 中的 Starship 路径箭头设置。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux Ghostty 外观与窗格快捷键配置">
+<meta property="og:url" content="https://scnabla.github.io/posts/669fd641/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="Linux Ghostty 的独立配置指南，说明 Nerd Font 字体、Monokai Classic 配色、背景图片、选中复制、分屏与窗格大小快捷键，并区分终端外观和 Bash 中的 Starship 路径箭头设置。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/web_image/covers/life-notes.png">
+<meta property="article:published_time" content="2026-11-04T18:20:00.000Z">
+<meta property="article:modified_time" content="2026-11-04T18:23:20.000Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="工具">
+<meta property="article:tag" content="终端">
+<meta property="article:tag" content="Ghostty">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/web_image/covers/life-notes.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Linux Ghostty 外观与窗格快捷键配置",
+  "url": "https://scnabla.github.io/posts/669fd641/",
+  "image": "https://scnabla.github.io/web_image/covers/life-notes.png",
+  "datePublished": "2026-11-04T18:20:00.000Z",
+  "dateModified": "2026-11-04T18:23:20.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "scnabla",
+      "url": "https://scnabla.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/posts/669fd641/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux Ghostty 外观与窗格快捷键配置',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/email-contact.css?v=1"><link rel="stylesheet" href="/css/site-search.css?v=1"><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20261031-2"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">Linux Ghostty 外观与窗格快捷键配置</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Linux Ghostty 外观与窗格快捷键配置</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-04T18:20:00.000Z" title="发表于 2026-11-05 02:20:00">2026-11-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-04T18:23:20.000Z" title="更新于 2026-11-05 02:23:20">2026-11-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="配置文件与仓库"><a href="#配置文件与仓库" class="headerlink" title="配置文件与仓库"></a>配置文件与仓库</h2><p>Ghostty 使用每行一个 <code>配置项 = 值</code> 的文本配置。这里记录 Ghostty 1.4.0 在 Linux 上使用的外观、鼠标和窗格快捷键。</p>
+<p>完整配置见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/tree/main/terminal/ghostty">personal-config 的 Ghostty 目录</a>，包含 <code>config.ghostty</code>、四款 Nerd Font 字体、字体授权、背景图片和安装脚本。各项设置说明见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://ghostty.org/docs/config/reference">Ghostty 官方配置参考</a>。</p>
+<table>
+<thead>
+<tr>
+<th>文件或目录</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>~/.config/ghostty/config.ghostty</code></td>
+<td>终端配置</td>
+</tr>
+<tr>
+<td><code>~/.config/ghostty/imgs/saber.jpg</code></td>
+<td>使用仓库安装脚本后保存的背景图片</td>
+</tr>
+<tr>
+<td><code>~/.local/share/fonts/JetBrainsMonoNerdFont/</code></td>
+<td>用户字体目录</td>
+</tr>
+<tr>
+<td><code>~/.config/starship.toml</code></td>
+<td>Bash 中的路径色块与提示符</td>
+</tr>
+<tr>
+<td><code>~/.bashrc</code></td>
+<td>Bash 加载 Starship 的初始化代码</td>
+</tr>
+</tbody></table>
+<p><code>~</code> 表示当前用户目录。设置了 <code>XDG_CONFIG_HOME</code> 时，Ghostty 配置位于该目录下的 <code>ghostty/</code>。</p>
+<h2 id="放置配置、字体与图片"><a href="#放置配置、字体与图片" class="headerlink" title="放置配置、字体与图片"></a>放置配置、字体与图片</h2><p>安装 Ghostty 和 fontconfig 后，下载仓库的完整 <code>terminal/ghostty/</code> 目录，在该目录中执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash install.sh</span><br></pre></td></tr></table></figure>
+
+<p>脚本将配置放到用户配置目录，将四款字体和授权文件放到用户字体目录，刷新字体缓存，并把背景路径替换为本机安装位置。已有配置会备份为 <code>ghostty.backup-时间-进程号</code>，安装后重新打开 Ghostty。</p>
+<p>手动配置时，将 <code>config.ghostty</code> 放到 <code>~/.config/ghostty/</code>，把字体放到上表的用户字体目录，并根据图片实际位置修改 <code>background-image</code>。字体放好后执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fc-cache -f ~/.local/share/fonts/JetBrainsMonoNerdFont</span><br><span class="line">fc-match <span class="string">&#x27;JetBrainsMono Nerd Font Mono&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>常规、粗体、斜体和粗斜体四款字体均使用 <code>JetBrainsMonoNerdFontMono-*.ttf</code> 文件。</p>
+<h2 id="字体、配色与留白"><a href="#字体、配色与留白" class="headerlink" title="字体、配色与留白"></a>字体、配色与留白</h2><p><img src="/posts/e326aeae/linux-ghostty-starship.png" alt="Linux Ghostty 的 Monokai Classic 配色、Git 与开发工具信息，以及时间和完整路径提示符"></p>
+<p>截图展示使用主题背景色时的字体与 Starship 提示符。背景图片可按下一节单独启用。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">font-family</span> = JetBrainsMo<span class="literal">no</span> Nerd Font Mo<span class="literal">no</span></span><br><span class="line"><span class="attr">font-size</span> = <span class="number">14</span></span><br><span class="line"><span class="attr">theme</span> = Monokai Classic</span><br><span class="line"><span class="attr">background-opacity</span> = <span class="number">1</span></span><br><span class="line"><span class="attr">window-padding-x</span> = <span class="number">12</span></span><br><span class="line"><span class="attr">window-padding-y</span> = <span class="number">10</span></span><br><span class="line"><span class="attr">mouse-hide-while-typing</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>字体使用 JetBrainsMono Nerd Font Mono，字号为 14，支持箭头和图标。背景完全不透明，左右留白为 12，上下留白为 10；输入时隐藏鼠标指针。</p>
+<p>本机也可用字体别名 <code>JetBrainsMono NFM</code>，两种名称均匹配同一份常规字体文件。迁移到其他机器后，用 <code>fc-match</code> 检查实际匹配结果。</p>
+<h2 id="背景图片"><a href="#背景图片" class="headerlink" title="背景图片"></a>背景图片</h2><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">background-image</span> = /home/your-user/.config/ghostty/imgs/saber.jpg</span><br><span class="line"><span class="attr">background-image-position</span> = center</span><br><span class="line"><span class="attr">background-image-fit</span> = cover</span><br><span class="line"><span class="attr">background-image-opacity</span> = <span class="number">0.15</span></span><br></pre></td></tr></table></figure>
+
+<p>手动配置时，把示例路径中的 <code>your-user</code> 替换为自己的用户名，或者直接填写背景图片的实际绝对路径。图片居中铺满窗口，图片不透明度设为 <code>0.15</code>。</p>
+<p><code>background-opacity</code> 控制窗口背景整体的不透明度，<code>background-image-opacity</code> 控制图片层的不透明度。删除 <code>background-image</code> 后使用主题背景色。</p>
+<h2 id="鼠标复制与粘贴"><a href="#鼠标复制与粘贴" class="headerlink" title="鼠标复制与粘贴"></a>鼠标复制与粘贴</h2><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">copy-on-select</span> = clipboard</span><br><span class="line"><span class="attr">right-click-action</span> = paste</span><br><span class="line"><span class="attr">mouse-reporting</span> = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>选中文本后复制到系统剪贴板，右键粘贴。鼠标事件传递保持开启，终端内支持鼠标的程序可以处理滚轮等操作。</p>
+<h2 id="分屏与窗口快捷键"><a href="#分屏与窗口快捷键" class="headerlink" title="分屏与窗口快捷键"></a>分屏与窗口快捷键</h2><p>窗格是标签页内的分屏区域。窗格放大只占满当前标签页，全屏与窗口最大化则作用于整个 Ghostty 窗口。</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>快捷键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>左右分屏</td>
+<td><code>Ctrl + Shift + F1</code></td>
+</tr>
+<tr>
+<td>上下分屏</td>
+<td><code>Ctrl + Shift + F2</code></td>
+</tr>
+<tr>
+<td>关闭当前窗格并确认</td>
+<td><code>Ctrl + Shift + F3</code></td>
+</tr>
+<tr>
+<td>放大或恢复当前窗格</td>
+<td><code>Ctrl + Shift + F4</code></td>
+</tr>
+<tr>
+<td>按方向切换输入焦点</td>
+<td><code>Ctrl + Shift + 方向键</code></td>
+</tr>
+<tr>
+<td>按方向调整窗格大小</td>
+<td><code>Ctrl + Alt + Shift + 方向键</code></td>
+</tr>
+<tr>
+<td>新建标签页</td>
+<td><code>Ctrl + Shift + T</code></td>
+</tr>
+<tr>
+<td>新建窗口</td>
+<td><code>Ctrl + Shift + N</code></td>
+</tr>
+<tr>
+<td>重载终端配置</td>
+<td><code>Ctrl + Shift + R</code></td>
+</tr>
+<tr>
+<td>进入或退出全屏</td>
+<td><code>Alt + Enter</code></td>
+</tr>
+<tr>
+<td>GNOME 窗口最大化或还原</td>
+<td><code>Alt + F10</code></td>
+</tr>
+</tbody></table>
+<p><code>Alt + F10</code> 由 GNOME 桌面处理，不是 Ghostty 配置中的绑定。窗格相关配置如下：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">keybind</span> = ctrl+shift+f1=new_split:right</span><br><span class="line"><span class="attr">keybind</span> = ctrl+shift+f2=new_split:down</span><br><span class="line"><span class="attr">keybind</span> = ctrl+shift+f3=close_surface</span><br><span class="line"><span class="attr">keybind</span> = ctrl+shift+f4=toggle_split_zoom</span><br><span class="line"><span class="attr">keybind</span> = ctrl+shift+r=reload_config</span><br><span class="line"><span class="attr">keybind</span> = ctrl+shift+arrow_left=goto_split:left</span><br><span class="line"><span class="attr">keybind</span> = ctrl+shift+arrow_right=goto_split:right</span><br><span class="line"><span class="attr">keybind</span> = ctrl+shift+arrow_up=goto_split:up</span><br><span class="line"><span class="attr">keybind</span> = ctrl+shift+arrow_down=goto_split:down</span><br><span class="line"><span class="attr">keybind</span> = alt+enter=toggle_fullscreen</span><br><span class="line"><span class="attr">confirm-close-surface</span> = always</span><br></pre></td></tr></table></figure>
+
+<h3 id="调整窗格大小"><a href="#调整窗格大小" class="headerlink" title="调整窗格大小"></a>调整窗格大小</h3><p>Ghostty 的调整单位是像素。仓库默认每次移动 <code>10</code> 像素，本机将四个方向均设为 <code>40</code> 像素：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">keybind</span> = ctrl+alt+shift+arrow_left=resize_split:left,<span class="number">40</span></span><br><span class="line"><span class="attr">keybind</span> = ctrl+alt+shift+arrow_right=resize_split:right,<span class="number">40</span></span><br><span class="line"><span class="attr">keybind</span> = ctrl+alt+shift+arrow_up=resize_split:up,<span class="number">40</span></span><br><span class="line"><span class="attr">keybind</span> = ctrl+alt+shift+arrow_down=resize_split:down,<span class="number">40</span></span><br></pre></td></tr></table></figure>
+
+<p>使用仓库配置时，直接修改原有四条绑定末尾的数字。需要细调时减小数值，需要一次移动更大距离时增大数值。</p>
+<p>Ghostty 1.4.0 提供切换焦点、调整大小和放大窗格的动作，没有交换窗格内容或整体轮换内容的动作。已有窗格的位置不会随 <code>goto_split</code> 改变。可在终端查看本机支持的动作：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ghostty +list-actions</span><br></pre></td></tr></table></figure>
+
+<p>动作含义见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://ghostty.org/docs/config/keybind/reference">Ghostty 快捷键动作说明</a>。</p>
+<h2 id="路径箭头与-Bash-提示符"><a href="#路径箭头与-Bash-提示符" class="headerlink" title="路径箭头与 Bash 提示符"></a>路径箭头与 Bash 提示符</h2><p>命令行中的时间、用户名、完整路径、Git 信息和色块箭头由 Starship 生成。Ghostty 负责显示字符，Nerd Font 提供箭头和图标。</p>
+<p>这套提示符按“时间、用户名、完整路径、命令输入”排列。Git、开发工具版本和 Docker 信息显示在上方；没有相关信息时，上方信息行隐藏。安装、初始化和布局配置见 <a href="/posts/e326aeae/">Starship 色块箭头提示符配置</a>。</p>
+<table>
+<thead>
+<tr>
+<th>修改内容</th>
+<th>文件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字体、字号、背景、窗格和鼠标</td>
+<td><code>~/.config/ghostty/config.ghostty</code></td>
+</tr>
+<tr>
+<td>路径长度、色块和提示符内容</td>
+<td><code>~/.config/starship.toml</code></td>
+</tr>
+<tr>
+<td>Bash 是否启用 Starship</td>
+<td><code>~/.bashrc</code></td>
+</tr>
+</tbody></table>
+<p>修改终端配置后按 <code>Ctrl + Shift + R</code>。修改 Bash 初始化代码后新建标签页；仅重载 Ghostty 配置不会重新初始化已运行的 Bash。</p>
+<h2 id="迁移配置"><a href="#迁移配置" class="headerlink" title="迁移配置"></a>迁移配置</h2><p>迁移终端外观时，保留 Ghostty 配置、字体和背景图片，并检查图片绝对路径。迁移提示符时，还需保留 Starship 程序、<code>starship.toml</code> 和 <code>.bashrc</code> 中的初始化代码。</p>
+<p>Windows 终端配置见 <a href="/posts/f238c/">Windows WezTerm 外观与窗格快捷键配置</a>。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/669fd641/">https://scnabla.github.io/posts/669fd641/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%B7%A5%E5%85%B7/">工具</a><a class="post-meta__tags" href="/tags/%E7%BB%88%E7%AB%AF/">终端</a><a class="post-meta__tags" href="/tags/Ghostty/">Ghostty</a></div><div class="post-share"><div class="social-share" data-image="/web_image/covers/life-notes.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"><img class="cover" src="/web_image/covers/life-notes.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Ghostty 与 WezTerm 配置 Starship 色块箭头提示符</div></div><div class="info-2"><div class="info-item-1">在 Linux Ghostty、Bash 和 Windows WezTerm、PowerShell 中启用 Starship Pastel Powerline 提示符，使用 JetBrains Mono Nerd Font 显示色块箭头、目录和 Git 信息，记录用户目录安装、配置位置、生效方法与恢复步骤。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:scnabla@163.com" rel="external nofollow noreferrer" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%B8%8E%E4%BB%93%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">配置文件与仓库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BE%E7%BD%AE%E9%85%8D%E7%BD%AE%E3%80%81%E5%AD%97%E4%BD%93%E4%B8%8E%E5%9B%BE%E7%89%87"><span class="toc-number">2.</span> <span class="toc-text">放置配置、字体与图片</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E4%BD%93%E3%80%81%E9%85%8D%E8%89%B2%E4%B8%8E%E7%95%99%E7%99%BD"><span class="toc-number">3.</span> <span class="toc-text">字体、配色与留白</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87"><span class="toc-number">4.</span> <span class="toc-text">背景图片</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BC%A0%E6%A0%87%E5%A4%8D%E5%88%B6%E4%B8%8E%E7%B2%98%E8%B4%B4"><span class="toc-number">5.</span> <span class="toc-text">鼠标复制与粘贴</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B1%8F%E4%B8%8E%E7%AA%97%E5%8F%A3%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">6.</span> <span class="toc-text">分屏与窗口快捷键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E6%95%B4%E7%AA%97%E6%A0%BC%E5%A4%A7%E5%B0%8F"><span class="toc-number">6.1.</span> <span class="toc-text">调整窗格大小</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%AF%E5%BE%84%E7%AE%AD%E5%A4%B4%E4%B8%8E-Bash-%E6%8F%90%E7%A4%BA%E7%AC%A6"><span class="toc-number">7.</span> <span class="toc-text">路径箭头与 Bash 提示符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%81%E7%A7%BB%E9%85%8D%E7%BD%AE"><span class="toc-number">8.</span> <span class="toc-text">迁移配置</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/669fd641/" title="Linux Ghostty 外观与窗格快捷键配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Linux Ghostty 外观与窗格快捷键配置"/></a><div class="content"><a class="title" href="/posts/669fd641/" title="Linux Ghostty 外观与窗格快捷键配置">Linux Ghostty 外观与窗格快捷键配置</a><time datetime="2026-11-04T18:20:00.000Z" title="发表于 2026-11-05 02:20:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"/></a><div class="content"><a class="title" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符">Ghostty 与 WezTerm 配置 Starship 色块箭头提示符</a><time datetime="2026-10-31T16:39:58.000Z" title="发表于 2026-11-01 00:39:58">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/f238c/" title="Windows WezTerm 外观与窗格快捷键配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows WezTerm 外观与窗格快捷键配置"/></a><div class="content"><a class="title" href="/posts/f238c/" title="Windows WezTerm 外观与窗格快捷键配置">Windows WezTerm 外观与窗格快捷键配置</a><time datetime="2026-10-31T16:35:22.000Z" title="发表于 2026-11-01 00:35:22">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复"><img src="/web_image/covers/problem-solving.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GitHub 历史贡献不显示的排查与恢复"/></a><div class="content"><a class="title" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复">GitHub 历史贡献不显示的排查与恢复</a><time datetime="2026-10-31T15:22:16.000Z" title="发表于 2026-10-31 23:22:16">2026-10-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"><img src="/web_image/covers/ai-tools.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"/></a><div class="content"><a class="title" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署">Qwen3-TTS 与 IndexTTS 2.5 单目录部署</a><time datetime="2026-10-19T17:14:25.000Z" title="发表于 2026-10-20 01:14:25">2026-10-20</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/email-contact.js?v=1" defer></script><script src="/js/site-search.js?v=1" defer></script><script src="/js/moments_bundle.js" defer></script></div></body></html>
