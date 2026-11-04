@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Windows WezTerm 外观与窗格快捷键配置 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="Windows WezTerm 的独立配置指南，包含配置文件放置、Nerd Font 字体、背景图片、窗格高亮、鼠标复制粘贴、窗格大小调整与正向轮换，并说明 SSH 启动菜单和 Starship 路径箭头各自的配置位置。">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Windows WezTerm 个人配置 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="Windows 日常使用的 WezTerm 个人配置，包含 PowerShell 启动、SSH 入口、字体和背景、鼠标操作、窗格明暗与轮换、中文命令面板，以及 Starship 提示符的配置位置。完整配置、字体和图片保存在公开仓库。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Windows WezTerm 外观与窗格快捷键配置">
+<meta property="og:title" content="Windows WezTerm 个人配置">
 <meta property="og:url" content="https://scnabla.github.io/posts/f238c/">
 <meta property="og:site_name" content="scnabla">
-<meta property="og:description" content="Windows WezTerm 的独立配置指南，包含配置文件放置、Nerd Font 字体、背景图片、窗格高亮、鼠标复制粘贴、窗格大小调整与正向轮换，并说明 SSH 启动菜单和 Starship 路径箭头各自的配置位置。">
+<meta property="og:description" content="Windows 日常使用的 WezTerm 个人配置，包含 PowerShell 启动、SSH 入口、字体和背景、鼠标操作、窗格明暗与轮换、中文命令面板，以及 Starship 提示符的配置位置。完整配置、字体和图片保存在公开仓库。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://scnabla.github.io/web_image/covers/life-notes.png">
 <meta property="article:published_time" content="2026-10-31T16:35:22.000Z">
-<meta property="article:modified_time" content="2026-11-04T18:20:00.000Z">
+<meta property="article:modified_time" content="2026-11-04T18:33:33.000Z">
 <meta property="article:author" content="scnabla">
 <meta property="article:tag" content="工具">
 <meta property="article:tag" content="终端">
@@ -16,11 +16,11 @@
 <meta name="twitter:image" content="https://scnabla.github.io/web_image/covers/life-notes.png"><script type="application/ld+json">{
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "Windows WezTerm 外观与窗格快捷键配置",
+  "headline": "Windows WezTerm 个人配置",
   "url": "https://scnabla.github.io/posts/f238c/",
   "image": "https://scnabla.github.io/web_image/covers/life-notes.png",
   "datePublished": "2026-10-31T16:35:22.000Z",
-  "dateModified": "2026-11-04T18:20:00.000Z",
+  "dateModified": "2026-11-04T18:33:33.000Z",
   "author": [
     {
       "@type": "Person",
@@ -175,44 +175,138 @@
   },
   autoDarkmode: true
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: 'Windows WezTerm 外观与窗格快捷键配置',
+  title: 'Windows WezTerm 个人配置',
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><link rel="stylesheet" href="/css/email-contact.css?v=1"><link rel="stylesheet" href="/css/site-search.css?v=1"><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20261031-2"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">Windows WezTerm 外观与窗格快捷键配置</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Windows WezTerm 外观与窗格快捷键配置</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-31T16:35:22.000Z" title="发表于 2026-11-01 00:35:22">2026-11-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-04T18:20:00.000Z" title="更新于 2026-11-05 02:20:00">2026-11-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="配置文件与仓库"><a href="#配置文件与仓库" class="headerlink" title="配置文件与仓库"></a>配置文件与仓库</h2><p>Windows 使用 WezTerm <code>20260917-114457-b09b56c2</code>，默认启动 PowerShell 7；未安装时回退到 Windows PowerShell。终端的字体、背景、鼠标和窗格快捷键由 <code>wezterm.lua</code> 管理。</p>
-<p>完整配置见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/tree/main/terminal/wezterm/windows">personal-config 的 Windows WezTerm 目录</a>。该目录独立包含配置、四款字体、字体授权和背景图片。安装 WezTerm 后，将 <code>wezterm.lua</code>、<code>fonts/</code> 和 <code>imgs/</code> 直接复制到 <code>%USERPROFILE%\.config\wezterm\</code>：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">%USERPROFILE%\.config\wezterm\</span><br><span class="line">├── wezterm.lua</span><br><span class="line">├── fonts\</span><br><span class="line">│   ├── JetBrainsMonoNerdFontMono-Regular.ttf</span><br><span class="line">│   ├── JetBrainsMonoNerdFontMono-Bold.ttf</span><br><span class="line">│   ├── JetBrainsMonoNerdFontMono-Italic.ttf</span><br><span class="line">│   ├── JetBrainsMonoNerdFontMono-BoldItalic.ttf</span><br><span class="line">│   └── OFL.txt</span><br><span class="line">└── imgs\</span><br><span class="line">    └── saber.jpg</span><br></pre></td></tr></table></figure>
+}</script><link rel="stylesheet" href="/css/email-contact.css?v=1"><link rel="stylesheet" href="/css/site-search.css?v=1"><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20261031-2"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">Windows WezTerm 个人配置</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Windows WezTerm 个人配置</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-31T16:35:22.000Z" title="发表于 2026-11-01 00:35:22">2026-11-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-04T18:33:33.000Z" title="更新于 2026-11-05 02:33:33">2026-11-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><p>Windows 日常终端使用 WezTerm，默认打开 PowerShell 7，通过启动菜单连接 SSH。正文使用 JetBrainsMono Nerd Font Mono，配色为 Catppuccin Mocha，背景配合 Saber 图片；多窗格使用明暗区分，常用操作集中在 <code>Ctrl + Shift</code> 组合键。</p>
+<p>完整配置保存在 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/tree/main/terminal/wezterm/windows">personal-config&#x2F;terminal&#x2F;wezterm&#x2F;windows</a>。该目录独立维护 <code>wezterm.lua</code>、字体和背景图片。</p>
+<p><img src="/posts/e326aeae/windows-wezterm-starship.png" alt="Windows WezTerm 的背景图片、当前窗口和标签提示，以及 PowerShell 中的 Starship 色块箭头"></p>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>终端配置</td>
+<td><code>%USERPROFILE%\.config\wezterm\wezterm.lua</code></td>
+</tr>
+<tr>
+<td>正文字体</td>
+<td>配置目录内的 <code>fonts/</code></td>
+</tr>
+<tr>
+<td>背景图片</td>
+<td>配置目录内的 <code>imgs/saber.jpg</code></td>
+</tr>
+<tr>
+<td>Starship 提示符</td>
+<td><code>%USERPROFILE%\.config\starship.toml</code></td>
+</tr>
+<tr>
+<td>PowerShell 初始化</td>
+<td>PowerShell 7 的 <code>$PROFILE</code></td>
+</tr>
+</tbody></table>
+<p><code>%USERPROFILE%</code> 是 Windows 当前用户目录。配置、字体和图片放在一起，换电脑时复制仓库 <code>windows/</code> 目录中的 <code>wezterm.lua</code>、<code>fonts/</code> 和 <code>imgs/</code> 到对应位置即可。字体由 WezTerm 直接读取，包含常规、粗体、斜体和粗斜体四款，授权文件为 <code>fonts/OFL.txt</code>。</p>
+<p><code>wezterm.lua</code> 前部集中保存功能开关、程序名、路径、SSH 信息和标签栏字体，后面按启动、外观、鼠标、按键、命令面板等分段。源码见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/blob/main/terminal/wezterm/windows/wezterm.lua">wezterm.lua</a>。</p>
+<h2 id="启动与-SSH"><a href="#启动与-SSH" class="headerlink" title="启动与 SSH"></a>启动与 SSH</h2><p>默认 Shell 优先使用 PowerShell 7，找不到时使用 Windows PowerShell，再回退到命令提示符。启动目录使用当前用户目录，由 <code>compat.paths.windows_project</code> 设置。</p>
+<p><code>Alt + L</code> 打开启动菜单，包含本机默认 Shell，以及启用后出现的 SSH 入口。本地使用的服务器信息保存在 <code>compat.ssh</code>，公开配置中的地址和用户名为示例：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">compat.ssh = &#123;</span><br><span class="line">  host = <span class="string">&#x27;example.com&#x27;</span>,</span><br><span class="line">  port = <span class="string">&#x27;22&#x27;</span>,</span><br><span class="line">  user = <span class="string">&#x27;your-user&#x27;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><code>%USERPROFILE%</code> 是 Windows 当前用户目录。覆盖前先备份已有配置。如果 <code>wezterm.exe</code> 所在目录还放有 <code>wezterm.lua</code>，先检查该文件：程序目录中的配置优先于上面的用户配置目录。自定义配置路径和完整查找顺序见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://wezterm.org/config/files.html">WezTerm 配置文件说明</a>。</p>
-<p>下面的 Lua 片段用于说明仓库配置中的具体设置，放在已有 <code>config</code> 对象上、<code>return config</code> 之前。修改列表时编辑原有 <code>config.keys</code> 和 <code>config.mouse_bindings</code>，避免用第二份列表覆盖其他绑定。</p>
-<h2 id="外观设置"><a href="#外观设置" class="headerlink" title="外观设置"></a>外观设置</h2><p><img src="/posts/e326aeae/windows-wezterm-starship.png" alt="Windows WezTerm 的背景图片、蓝色当前标签与 Starship 色块提示符"></p>
-<p>截图记录了背景图片、标签栏与提示符的搭配。路径色块由 PowerShell 中的 Starship 生成，配置方法见后文。</p>
-<h3 id="字体、配色与分隔线"><a href="#字体、配色与分隔线" class="headerlink" title="字体、配色与分隔线"></a>字体、配色与分隔线</h3><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">config</span>.font_dirs = &#123; wezterm.config_dir .. <span class="string">&#x27;/fonts&#x27;</span> &#125;</span><br><span class="line"><span class="built_in">config</span>.font = wezterm.font(<span class="string">&#x27;JetBrainsMono Nerd Font Mono&#x27;</span>)</span><br><span class="line"><span class="built_in">config</span>.font_size = <span class="number">12</span></span><br><span class="line"><span class="built_in">config</span>.color_scheme = <span class="string">&#x27;Catppuccin Mocha&#x27;</span></span><br><span class="line"><span class="built_in">config</span>.colors = &#123; split = <span class="string">&#x27;#FFB000&#x27;</span> &#125;</span><br><span class="line"><span class="built_in">config</span>.window_background_opacity = <span class="number">1.0</span></span><br></pre></td></tr></table></figure>
-
-<p>正文使用 JetBrainsMono Nerd Font Mono，字号为 12，字体文件位于配置旁的 <code>fonts/</code> 目录。分屏分隔线设为橘黄色 <code>#FFB000</code>，背景完全不透明，窗口内边距沿用默认值。</p>
-<h3 id="背景图片"><a href="#背景图片" class="headerlink" title="背景图片"></a>背景图片</h3><p>现有配置将图片相对路径保存在 <code>compat.paths.background_image</code> 中，并在图片存在时加载：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> enabled.background <span class="keyword">then</span></span><br><span class="line">  <span class="keyword">local</span> background_path = wezterm.config_dir .. <span class="string">&#x27;/&#x27;</span> .. compat.paths.background_image</span><br><span class="line">  <span class="keyword">if</span> compat.file_exists(background_path) <span class="keyword">then</span></span><br><span class="line">    <span class="built_in">config</span>.window_background_image = background_path</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    compat.warn_once(<span class="string">&#x27;background&#x27;</span>, <span class="string">&#x27;背景图片 &#x27;</span> .. compat.paths.background_image .. <span class="string">&#x27; 不存在或不可读，暂时使用配色背景。&#x27;</span>)</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line">  <span class="built_in">config</span>.window_background_image_hsb = &#123; brightness = <span class="number">0.15</span> &#125;</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-
-<p><code>compat.paths.background_image</code> 当前为 <code>imgs/saber.jpg</code>。<code>enabled</code> 和 <code>compat</code> 是这份配置文件定义的开关与辅助函数，保留在文件前部。图片亮度设为 0.15，降低背景图片对文字阅读的干扰，原图文件保持不变。迁移配置时一并复制 <code>imgs</code> 目录。</p>
-<h3 id="标签栏、光标与滚动条"><a href="#标签栏、光标与滚动条" class="headerlink" title="标签栏、光标与滚动条"></a>标签栏、光标与滚动条</h3><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">config</span>.tab_bar_at_bottom = <span class="literal">false</span></span><br><span class="line"><span class="built_in">config</span>.hide_tab_bar_if_only_one_tab = <span class="literal">false</span></span><br><span class="line"><span class="built_in">config</span>.window_frame = &#123;</span><br><span class="line">  font = wezterm.font(<span class="string">&#x27;Microsoft YaHei UI&#x27;</span>),</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">config</span>.default_cursor_style = <span class="string">&#x27;BlinkingBar&#x27;</span></span><br><span class="line"><span class="built_in">config</span>.cursor_blink_rate = <span class="number">800</span></span><br><span class="line"><span class="built_in">config</span>.enable_scroll_bar = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-
-<p>标签栏位于顶部，只有一个标签页时也显示。Windows 标签栏使用 Microsoft YaHei UI，正文字体保持原设置。光标为闪烁竖线，闪烁间隔为 800 毫秒，窗口显示滚动条。</p>
-<h3 id="当前窗格和窗口提示"><a href="#当前窗格和窗口提示" class="headerlink" title="当前窗格和窗口提示"></a>当前窗格和窗口提示</h3><p>非当前窗格降低亮度与饱和度：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">config</span>.inactive_pane_hsb = &#123; saturation = <span class="number">0.8</span>, brightness = <span class="number">0.35</span> &#125;</span><br></pre></td></tr></table></figure>
-
-<p>现有文件还通过 <code>format-tab-title</code>、<code>window-focus-changed</code> 和 <code>format-window-title</code> 等回调设置提示：</p>
+<p>公开配置的 <code>enabled.ssh</code> 为 <code>false</code>；本地填写连接信息后设为 <code>true</code>。连接使用普通 SSH，<code>multiplexing = &#39;None&#39;</code>，远端不需要安装 WezTerm，也不会在启动窗口时自动连接。密码不写入配置。</p>
+<p>修改 SSH 地址后，旧进程的启动菜单可能保留原条目，需要关闭所有 WezTerm 窗口后重新打开。该行为有对应的 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/wezterm/wezterm/issues/7072">WezTerm 重载问题记录</a>。</p>
+<h2 id="字体与背景"><a href="#字体与背景" class="headerlink" title="字体与背景"></a>字体与背景</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>当前设置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>正文字体</td>
+<td>JetBrainsMono Nerd Font Mono</td>
+</tr>
+<tr>
+<td>字号</td>
+<td><code>12</code></td>
+</tr>
+<tr>
+<td>默认配色</td>
+<td>Catppuccin Mocha</td>
+</tr>
+<tr>
+<td>背景不透明度</td>
+<td><code>1.0</code></td>
+</tr>
+<tr>
+<td>背景图片</td>
+<td><code>imgs/saber.jpg</code></td>
+</tr>
+<tr>
+<td>图片亮度</td>
+<td><code>0.15</code></td>
+</tr>
+<tr>
+<td>分屏分隔线</td>
+<td>橘黄色 <code>#FFB000</code></td>
+</tr>
+<tr>
+<td>窗口内边距</td>
+<td>WezTerm 默认值</td>
+</tr>
+</tbody></table>
+<p>字体目录通过 <code>wezterm.config_dir .. &#39;/fonts&#39;</code> 定位，背景图片也从配置目录读取。图片文件不存在时使用配色背景，字体、配色和快捷键仍继续加载。</p>
+<p>默认配色保存在 <code>config.color_scheme</code>，图片亮度保存在 <code>config.window_background_image_hsb</code>。窗口背景保持不透明，通过降低图片亮度让文字更清楚。</p>
+<h2 id="标签栏与当前输入位置"><a href="#标签栏与当前输入位置" class="headerlink" title="标签栏与当前输入位置"></a>标签栏与当前输入位置</h2><p>标签栏放在顶部，只有一个标签页时也显示。标签栏使用 <code>Microsoft YaHei UI</code>，正文继续使用 Nerd Font。</p>
+<p>多个窗格同时打开时，当前窗格保持正常亮度；其他窗格的饱和度为 <code>0.8</code>、亮度为 <code>0.35</code>。输入位置还通过标签和窗口提示区分：</p>
 <ul>
 <li>当前标签名称前显示“当前”和标签序号。</li>
-<li>获得键盘焦点的窗口，其当前标签使用蓝色背景 <code>#89b4fa</code>；其他窗口的当前标签使用灰色背景 <code>#45475a</code>。</li>
+<li>正在接收键盘输入的窗口，其当前标签为蓝色；其他窗口的当前标签为灰色。</li>
 <li>标签栏左侧显示“当前窗口”或“未激活”。</li>
-<li>窗口标题显示当前标签序号与标签总数；窗格放大时追加 <code>[窗格已放大]</code>。</li>
+<li>窗口标题显示当前标签序号和标签总数，放大窗格时追加 <code>[窗格已放大]</code>。</li>
 </ul>
-<p>这组设置由文件前部的 <code>enabled.focus_indicator</code> 开关控制，当前为 <code>true</code>。</p>
-<h2 id="鼠标复制与粘贴"><a href="#鼠标复制与粘贴" class="headerlink" title="鼠标复制与粘贴"></a>鼠标复制与粘贴</h2><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">config</span>.mouse_bindings = &#123;</span><br><span class="line">  &#123;</span><br><span class="line">    event = &#123; Up = &#123; streak = <span class="number">1</span>, button = <span class="string">&#x27;Left&#x27;</span> &#125; &#125;,</span><br><span class="line">    mods = <span class="string">&#x27;NONE&#x27;</span>,</span><br><span class="line">    action = wezterm.action.CompleteSelection <span class="string">&#x27;Clipboard&#x27;</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    event = &#123; Down = &#123; streak = <span class="number">1</span>, button = <span class="string">&#x27;Right&#x27;</span> &#125; &#125;,</span><br><span class="line">    mods = <span class="string">&#x27;NONE&#x27;</span>,</span><br><span class="line">    action = wezterm.action.PasteFrom <span class="string">&#x27;Clipboard&#x27;</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    event = &#123; Down = &#123; streak = <span class="number">1</span>, button = <span class="string">&#x27;Left&#x27;</span> &#125; &#125;,</span><br><span class="line">    mods = <span class="string">&#x27;CTRL&#x27;</span>,</span><br><span class="line">    action = wezterm.action.Nop,</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    event = &#123; Up = &#123; streak = <span class="number">1</span>, button = <span class="string">&#x27;Left&#x27;</span> &#125; &#125;,</span><br><span class="line">    mods = <span class="string">&#x27;CTRL&#x27;</span>,</span><br><span class="line">    action = wezterm.action.OpenLinkAtMouseCursor,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>左键选择后松开即复制，右键粘贴；按住 <code>Ctrl</code> 点击链接时打开链接。</p>
-<h2 id="分屏与窗口快捷键"><a href="#分屏与窗口快捷键" class="headerlink" title="分屏与窗口快捷键"></a>分屏与窗口快捷键</h2><p>窗格是同一个标签页里的分屏区域；窗口是 Windows 管理的独立窗口。放大窗格、最大化窗口和全屏是三种不同操作。</p>
-<table>
+<p>这些设置统一由 <code>enabled.focus_indicator</code> 控制。默认保留自定义标签名，没有自定义名称时显示当前窗格标题。</p>
+<h2 id="鼠标、光标与滚动"><a href="#鼠标、光标与滚动" class="headerlink" title="鼠标、光标与滚动"></a>鼠标、光标与滚动</h2><table>
+<thead>
+<tr>
+<th>操作或项目</th>
+<th>当前行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>左键选择文本后松开</td>
+<td>复制到系统剪贴板</td>
+</tr>
+<tr>
+<td>右键点击</td>
+<td>粘贴系统剪贴板</td>
+</tr>
+<tr>
+<td><code>Ctrl + 左键</code> 点击链接</td>
+<td>打开链接</td>
+</tr>
+<tr>
+<td>输入光标</td>
+<td>闪烁竖线，间隔 <code>800</code> 毫秒</td>
+</tr>
+<tr>
+<td>滚动条</td>
+<td>显示</td>
+</tr>
+<tr>
+<td>历史输出行数</td>
+<td>WezTerm 默认值</td>
+</tr>
+<tr>
+<td>终端响铃</td>
+<td>关闭</td>
+</tr>
+</tbody></table>
+<p>鼠标操作集中在 <code>config.mouse_bindings</code>，普通左键用于选择，打开链接需要按住 <code>Ctrl</code>。</p>
+<h2 id="窗格与窗口操作"><a href="#窗格与窗口操作" class="headerlink" title="窗格与窗口操作"></a>窗格与窗口操作</h2><table>
 <thead>
 <tr>
 <th>操作</th>
@@ -236,15 +330,15 @@
 <td><code>Ctrl + Shift + F4</code></td>
 </tr>
 <tr>
-<td>正向轮换所有窗格内容</td>
+<td>正向轮换窗格内容</td>
 <td><code>Ctrl + Shift + F5</code></td>
 </tr>
 <tr>
-<td>按方向切换输入焦点</td>
+<td>向相邻窗格切换输入焦点</td>
 <td><code>Ctrl + Shift + 方向键</code></td>
 </tr>
 <tr>
-<td>按方向调整窗格大小</td>
+<td>调整窗格大小</td>
 <td><code>Ctrl + Alt + Shift + 方向键</code></td>
 </tr>
 <tr>
@@ -252,117 +346,68 @@
 <td><code>Ctrl + Shift + T</code></td>
 </tr>
 <tr>
+<td>切换到上一个、下一个标签页</td>
+<td><code>Ctrl + Shift + Tab</code>、<code>Ctrl + Tab</code></td>
+</tr>
+<tr>
 <td>新建窗口</td>
 <td><code>Ctrl + Shift + N</code></td>
 </tr>
 <tr>
-<td>重载配置</td>
-<td><code>Ctrl + Shift + R</code></td>
-</tr>
-<tr>
-<td>打开中文命令面板</td>
-<td><code>Ctrl + Shift + P</code></td>
-</tr>
-<tr>
-<td>打开启动菜单</td>
-<td><code>Alt + L</code></td>
-</tr>
-<tr>
-<td>进入或退出全屏</td>
+<td>全屏或退出全屏</td>
 <td><code>Alt + Enter</code></td>
 </tr>
-<tr>
-<td>窗口最大化</td>
-<td><code>Win + ↑</code></td>
-</tr>
-<tr>
-<td>从最大化恢复窗口</td>
-<td><code>Win + ↓</code></td>
-</tr>
 </tbody></table>
-<p>最后两项由 Windows 处理。自定义快捷键集中在同一个列表中：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">config</span>.keys = &#123;</span><br><span class="line">  &#123; key = <span class="string">&#x27;LeftArrow&#x27;</span>, mods = <span class="string">&#x27;CTRL|ALT|SHIFT&#x27;</span>, action = wezterm.action.AdjustPaneSize &#123; <span class="string">&#x27;Left&#x27;</span>, <span class="number">4</span> &#125; &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;RightArrow&#x27;</span>, mods = <span class="string">&#x27;CTRL|ALT|SHIFT&#x27;</span>, action = wezterm.action.AdjustPaneSize &#123; <span class="string">&#x27;Right&#x27;</span>, <span class="number">4</span> &#125; &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;UpArrow&#x27;</span>, mods = <span class="string">&#x27;CTRL|ALT|SHIFT&#x27;</span>, action = wezterm.action.AdjustPaneSize &#123; <span class="string">&#x27;Up&#x27;</span>, <span class="number">2</span> &#125; &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;DownArrow&#x27;</span>, mods = <span class="string">&#x27;CTRL|ALT|SHIFT&#x27;</span>, action = wezterm.action.AdjustPaneSize &#123; <span class="string">&#x27;Down&#x27;</span>, <span class="number">2</span> &#125; &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;F4&#x27;</span>, mods = <span class="string">&#x27;CTRL|SHIFT&#x27;</span>, action = wezterm.action.TogglePaneZoomState &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;F5&#x27;</span>, mods = <span class="string">&#x27;CTRL|SHIFT&#x27;</span>, action = wezterm.action.RotatePanes <span class="string">&#x27;Clockwise&#x27;</span> &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;Enter&#x27;</span>, mods = <span class="string">&#x27;ALT&#x27;</span>, action = wezterm.action.ToggleFullScreen &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;l&#x27;</span>, mods = <span class="string">&#x27;ALT&#x27;</span>, action = wezterm.action.ShowLauncher &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;F1&#x27;</span>, mods = <span class="string">&#x27;CTRL|SHIFT&#x27;</span>, action = wezterm.action.SplitHorizontal &#123; domain = <span class="string">&#x27;CurrentPaneDomain&#x27;</span> &#125; &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;F2&#x27;</span>, mods = <span class="string">&#x27;CTRL|SHIFT&#x27;</span>, action = wezterm.action.SplitVertical &#123; domain = <span class="string">&#x27;CurrentPaneDomain&#x27;</span> &#125; &#125;,</span><br><span class="line">  &#123; key = <span class="string">&#x27;F3&#x27;</span>, mods = <span class="string">&#x27;CTRL|SHIFT&#x27;</span>, action = wezterm.action.CloseCurrentPane &#123; confirm = <span class="literal">true</span> &#125; &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="调整窗格大小"><a href="#调整窗格大小" class="headerlink" title="调整窗格大小"></a>调整窗格大小</h3><p>左右方向每次调整四列，上下方向每次调整两行。这里的列和行是终端字符单元，实际像素距离随字体、字号和缩放比例变化。</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123; key = <span class="string">&#x27;RightArrow&#x27;</span>, mods = <span class="string">&#x27;CTRL|ALT|SHIFT&#x27;</span>, action = wezterm.action.AdjustPaneSize &#123; <span class="string">&#x27;Right&#x27;</span>, <span class="number">4</span> &#125; &#125;,</span><br><span class="line">&#123; key = <span class="string">&#x27;DownArrow&#x27;</span>, mods = <span class="string">&#x27;CTRL|ALT|SHIFT&#x27;</span>, action = wezterm.action.AdjustPaneSize &#123; <span class="string">&#x27;Down&#x27;</span>, <span class="number">2</span> &#125; &#125;,</span><br></pre></td></tr></table></figure>
-
-<p>以上两行对应 <code>config.keys</code> 中的条目。需要改变步进时，同步修改左右两个方向和上下两个方向。</p>
-<h3 id="正向轮换内容"><a href="#正向轮换内容" class="headerlink" title="正向轮换内容"></a>正向轮换内容</h3><p>按 <code>Ctrl + Shift + F5</code> 直接轮换所有窗格内容，无需选择字母。屏幕上的窗格大小与布局不变，输入焦点留在原位置。</p>
-<p>例如焦点在最左侧，三个横排窗格连续轮换：</p>
+<p>窗格大小按字符单元调整：左右每次四列，上下每次两行。字体或字号改变后，一次调整对应的像素距离也会变化。</p>
+<p><code>Ctrl + Shift + F5</code> 每按一次，所有窗格内容正向轮换一次，焦点留在原来的屏幕位置。以三个横排窗格、焦点在左侧为例：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[A ← 焦点] [B] [C]</span><br><span class="line">[C ← 焦点] [A] [B]</span><br><span class="line">[B ← 焦点] [C] [A]</span><br></pre></td></tr></table></figure>
 
-<p>轮换作用于整个标签页，其他窗格内容也一起移动。复杂分屏按照程序内部的窗格顺序轮换，不按鼠标指向选择目标。动作定义见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://wezterm.org/config/lua/keyassignment/RotatePanes.html">RotatePanes 官方说明</a>。</p>
-<h3 id="关闭确认"><a href="#关闭确认" class="headerlink" title="关闭确认"></a>关闭确认</h3><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">config</span>.window_close_confirmation = <span class="string">&#x27;AlwaysPrompt&#x27;</span></span><br><span class="line"><span class="built_in">config</span>.skip_close_confirmation_for_processes_named = &#123;&#125;</span><br></pre></td></tr></table></figure>
-
-<p>关闭窗口时要求确认；关闭当前窗格的 <code>F3</code> 绑定也显式使用 <code>confirm = true</code>。</p>
-<h2 id="SSH-启动菜单"><a href="#SSH-启动菜单" class="headerlink" title="SSH 启动菜单"></a>SSH 启动菜单</h2><p>仓库默认关闭 SSH 菜单，地址和用户名保留为示例。需要连接服务器时，在自己的配置中填写：</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">compat.ssh = &#123;</span><br><span class="line">  host = <span class="string">&#x27;example.com&#x27;</span>,</span><br><span class="line">  port = <span class="string">&#x27;22&#x27;</span>,</span><br><span class="line">  user = <span class="string">&#x27;your-user&#x27;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>将文件前部 <code>enabled</code> 表中的 <code>ssh</code> 改为 <code>true</code>，然后按 <code>Alt + L</code> 选择 SSH 入口。密码不写入配置文件。</p>
-<p>该配置使用 <code>multiplexing = &#39;None&#39;</code>，通过普通 SSH 连接，服务器不需要安装 WezTerm。地址变化后，旧进程的启动菜单可能继续显示旧条目；保存工作、关闭所有 WezTerm 窗口后重新打开，再核对入口地址。相关重载问题见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/wezterm/wezterm/issues/7072">WezTerm #7072</a>。</p>
-<h2 id="路径箭头与-PowerShell-提示符"><a href="#路径箭头与-PowerShell-提示符" class="headerlink" title="路径箭头与 PowerShell 提示符"></a>路径箭头与 PowerShell 提示符</h2><p>WezTerm 控制字体和显示窗口；命令行里的时间、用户名、路径色块和箭头由 Starship 提示符生成。</p>
-<table>
+<p>轮换保留原有布局和每个位置的大小。实现使用 <code>RotatePanes &#39;Clockwise&#39;</code>，按照标签页内部的窗格顺序轮换，说明见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://wezterm.org/config/lua/keyassignment/RotatePanes.html">WezTerm RotatePanes</a>。</p>
+<p><code>F4</code> 放大的是标签页内的一个窗格，<code>Alt + Enter</code> 切换的是整个窗口的全屏状态。Windows 的窗口最大化、还原分别使用系统快捷键 <code>Win + ↑</code>、<code>Win + ↓</code>。</p>
+<h2 id="中文命令面板"><a href="#中文命令面板" class="headerlink" title="中文命令面板"></a>中文命令面板</h2><p><code>Ctrl + Shift + P</code> 打开命令面板。配置增加了中文入口，并在名称旁显示对应快捷键；没有绑定的操作标记为“未绑定快捷键”，可以直接从面板执行。</p>
+<p>面板涵盖配置重载、新建和关闭终端、复制粘贴、搜索、字号调整、滚动、窗口置顶、标签页切换、窗格操作和调试信息。内置英文命令同时保留。</p>
+<p>窗格相关菜单还包含选择窗格、交换两个窗格的位置，以及将窗格移到新标签页或新窗口。日常正向轮换直接使用 <code>Ctrl + Shift + F5</code>。</p>
+<h2 id="关闭确认与渲染"><a href="#关闭确认与渲染" class="headerlink" title="关闭确认与渲染"></a>关闭确认与渲染</h2><p>窗口关闭设置为 <code>AlwaysPrompt</code>，关闭当前窗格的快捷键也要求确认。<code>skip_close_confirmation_for_processes_named</code> 设为空列表，不因窗格中仅运行 PowerShell 等程序而跳过确认。</p>
+<p>渲染使用 OpenGL，帧率和显卡选择沿用默认设置。渲染方式修改后需要完整退出并重新启动 WezTerm。</p>
+<h2 id="功能开关"><a href="#功能开关" class="headerlink" title="功能开关"></a>功能开关</h2><table>
 <thead>
 <tr>
-<th>内容</th>
-<th>配置位置</th>
+<th>开关</th>
+<th>公开配置默认值</th>
+<th>控制内容</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>字体、背景、分屏与鼠标</td>
-<td><code>%USERPROFILE%\.config\wezterm\wezterm.lua</code></td>
+<td><code>windows_settings</code></td>
+<td><code>true</code></td>
+<td>Shell、启动目录和 Windows 标签栏字体</td>
 </tr>
 <tr>
-<td>路径、色块与 Git 信息</td>
-<td><code>%USERPROFILE%\.config\starship.toml</code></td>
+<td><code>ssh</code></td>
+<td><code>false</code></td>
+<td>SSH 启动菜单入口</td>
 </tr>
 <tr>
-<td>PowerShell 加载 Starship</td>
-<td>PowerShell 7 的 <code>$PROFILE</code></td>
+<td><code>background</code></td>
+<td><code>true</code></td>
+<td>背景图片与图片亮度</td>
+</tr>
+<tr>
+<td><code>chinese_commands</code></td>
+<td><code>true</code></td>
+<td>中文命令面板入口</td>
+</tr>
+<tr>
+<td><code>focus_indicator</code></td>
+<td><code>true</code></td>
+<td>窗格明暗、当前标签与窗口提示</td>
 </tr>
 </tbody></table>
-<p>PowerShell 7 中的安装和初始化代码见 <a href="/posts/e326aeae/">Starship 色块箭头提示符配置</a>。修改 <code>$PROFILE</code> 后，新建标签页，或在已有 PowerShell 会话执行：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">. <span class="variable">$PROFILE</span></span><br></pre></td></tr></table></figure>
-
-<p>SSH 连接 Linux 后，提示符由远端 Shell 及其 Starship 配置决定。修改 Windows 本机的 <code>starship.toml</code> 不会改变远端提示符。</p>
-<h2 id="修改与迁移"><a href="#修改与迁移" class="headerlink" title="修改与迁移"></a>修改与迁移</h2><table>
-<thead>
-<tr>
-<th>修改内容</th>
-<th>配置项或文件</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>字号</td>
-<td><code>config.font_size</code></td>
-</tr>
-<tr>
-<td>默认配色</td>
-<td><code>config.color_scheme</code></td>
-</tr>
-<tr>
-<td>背景图片</td>
-<td><code>compat.paths.background_image</code> 与 <code>imgs/</code></td>
-</tr>
-<tr>
-<td>图片亮度</td>
-<td><code>config.window_background_image_hsb</code></td>
-</tr>
-<tr>
-<td>分隔线颜色</td>
-<td><code>config.colors.split</code></td>
-</tr>
-<tr>
-<td>非当前窗格明暗</td>
-<td><code>config.inactive_pane_hsb</code></td>
-</tr>
-<tr>
-<td>窗格快捷键</td>
-<td><code>config.keys</code></td>
-</tr>
-</tbody></table>
-<p>迁移时完整复制 Windows WezTerm 目录中的配置、字体和图片。提示符需要另外保留 Starship 程序、<code>starship.toml</code> 与 PowerShell 初始化设置。</p>
-<p>Linux 终端配置见 <a href="/posts/669fd641/" title="Linux Ghostty 外观与窗格快捷键配置">Linux Ghostty 外观与窗格快捷键配置</a>。</p>
+<p>修改终端设置后按 <code>Ctrl + Shift + R</code> 重载。Shell 和启动目录设置影响之后新建的会话。若同时存在程序目录和用户目录两份 <code>wezterm.lua</code>，程序目录中的文件优先加载，查找规则见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://wezterm.org/config/files.html">WezTerm 配置说明</a>。</p>
+<h2 id="路径色块与箭头"><a href="#路径色块与箭头" class="headerlink" title="路径色块与箭头"></a>路径色块与箭头</h2><p>PowerShell 使用 Starship 提示符。时间、用户名、完整路径和箭头排在主提示符中，Git、开发工具版本等附加信息显示在上方。WezTerm 配置只负责字体和显示，提示符内容由 <code>starship.toml</code> 管理。</p>
+<p>Starship 通过 PowerShell 7 的 <code>$PROFILE</code> 初始化。修改初始化代码后，新建标签页，或在现有 PowerShell 会话执行 <code>. $PROFILE</code>。安装和提示符内容见 <a href="/posts/e326aeae/">Starship 色块箭头提示符配置</a>。</p>
+<p>通过 SSH 连接 Linux 后，路径箭头来自远端 Shell 的提示符配置，与 Windows 本机的 <code>starship.toml</code> 分开维护。</p>
+<p>Linux 端使用的终端配置见 <a href="/posts/669fd641/">Linux Ghostty 个人配置</a>。</p>
 </article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/f238c/">https://scnabla.github.io/posts/f238c/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%B7%A5%E5%85%B7/">工具</a><a class="post-meta__tags" href="/tags/%E7%BB%88%E7%AB%AF/">终端</a><a class="post-meta__tags" href="/tags/WezTerm/">WezTerm</a></div><div class="post-share"><div class="social-share" data-image="/web_image/covers/life-notes.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"><img class="cover" src="/web_image/covers/life-notes.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Ghostty 与 WezTerm 配置 Starship 色块箭头提示符</div></div><div class="info-2"><div class="info-item-1">在 Linux Ghostty、Bash 和 Windows WezTerm、PowerShell 中启用 Starship Pastel Powerline 提示符，使用 JetBrains Mono Nerd Font 显示色块箭头、目录和 Git 信息，记录用户目录安装、配置位置、生效方法与恢复步骤。</div></div></div></a><a class="pagination-related" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复"><img class="cover" src="/web_image/covers/problem-solving.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">GitHub 历史贡献不显示的排查与恢复</div></div><div class="info-2"><div class="info-item-1">GitHub 旧邮箱重新关联并验证后，历史提交已显示正确作者，个人主页的贡献日历却仍有空缺。记录通过临时切换默认分支补回 230 条贡献的操作，以及邮箱、提交记录和恢复数量的核对方法。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:scnabla@163.com" rel="external nofollow noreferrer" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
 <article class="light-note-item">
   <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
@@ -372,4 +417,4 @@
   <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
 </article>
 </div>
-<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%B8%8E%E4%BB%93%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">配置文件与仓库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%96%E8%A7%82%E8%AE%BE%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">外观设置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E4%BD%93%E3%80%81%E9%85%8D%E8%89%B2%E4%B8%8E%E5%88%86%E9%9A%94%E7%BA%BF"><span class="toc-number">2.1.</span> <span class="toc-text">字体、配色与分隔线</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87"><span class="toc-number">2.2.</span> <span class="toc-text">背景图片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E6%A0%8F%E3%80%81%E5%85%89%E6%A0%87%E4%B8%8E%E6%BB%9A%E5%8A%A8%E6%9D%A1"><span class="toc-number">2.3.</span> <span class="toc-text">标签栏、光标与滚动条</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%93%E5%89%8D%E7%AA%97%E6%A0%BC%E5%92%8C%E7%AA%97%E5%8F%A3%E6%8F%90%E7%A4%BA"><span class="toc-number">2.4.</span> <span class="toc-text">当前窗格和窗口提示</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BC%A0%E6%A0%87%E5%A4%8D%E5%88%B6%E4%B8%8E%E7%B2%98%E8%B4%B4"><span class="toc-number">3.</span> <span class="toc-text">鼠标复制与粘贴</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B1%8F%E4%B8%8E%E7%AA%97%E5%8F%A3%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">4.</span> <span class="toc-text">分屏与窗口快捷键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E6%95%B4%E7%AA%97%E6%A0%BC%E5%A4%A7%E5%B0%8F"><span class="toc-number">4.1.</span> <span class="toc-text">调整窗格大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E5%90%91%E8%BD%AE%E6%8D%A2%E5%86%85%E5%AE%B9"><span class="toc-number">4.2.</span> <span class="toc-text">正向轮换内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E7%A1%AE%E8%AE%A4"><span class="toc-number">4.3.</span> <span class="toc-text">关闭确认</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SSH-%E5%90%AF%E5%8A%A8%E8%8F%9C%E5%8D%95"><span class="toc-number">5.</span> <span class="toc-text">SSH 启动菜单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%AF%E5%BE%84%E7%AE%AD%E5%A4%B4%E4%B8%8E-PowerShell-%E6%8F%90%E7%A4%BA%E7%AC%A6"><span class="toc-number">6.</span> <span class="toc-text">路径箭头与 PowerShell 提示符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E4%B8%8E%E8%BF%81%E7%A7%BB"><span class="toc-number">7.</span> <span class="toc-text">修改与迁移</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/669fd641/" title="Linux Ghostty 外观与窗格快捷键配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Linux Ghostty 外观与窗格快捷键配置"/></a><div class="content"><a class="title" href="/posts/669fd641/" title="Linux Ghostty 外观与窗格快捷键配置">Linux Ghostty 外观与窗格快捷键配置</a><time datetime="2026-11-04T18:20:00.000Z" title="发表于 2026-11-05 02:20:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"/></a><div class="content"><a class="title" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符">Ghostty 与 WezTerm 配置 Starship 色块箭头提示符</a><time datetime="2026-10-31T16:39:58.000Z" title="发表于 2026-11-01 00:39:58">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/f238c/" title="Windows WezTerm 外观与窗格快捷键配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows WezTerm 外观与窗格快捷键配置"/></a><div class="content"><a class="title" href="/posts/f238c/" title="Windows WezTerm 外观与窗格快捷键配置">Windows WezTerm 外观与窗格快捷键配置</a><time datetime="2026-10-31T16:35:22.000Z" title="发表于 2026-11-01 00:35:22">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复"><img src="/web_image/covers/problem-solving.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GitHub 历史贡献不显示的排查与恢复"/></a><div class="content"><a class="title" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复">GitHub 历史贡献不显示的排查与恢复</a><time datetime="2026-10-31T15:22:16.000Z" title="发表于 2026-10-31 23:22:16">2026-10-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"><img src="/web_image/covers/ai-tools.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"/></a><div class="content"><a class="title" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署">Qwen3-TTS 与 IndexTTS 2.5 单目录部署</a><time datetime="2026-10-19T17:14:25.000Z" title="发表于 2026-10-20 01:14:25">2026-10-20</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/email-contact.js?v=1" defer></script><script src="/js/site-search.js?v=1" defer></script><script src="/js/moments_bundle.js" defer></script></div></body></html>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E4%B8%8E-SSH"><span class="toc-number">2.</span> <span class="toc-text">启动与 SSH</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E4%BD%93%E4%B8%8E%E8%83%8C%E6%99%AF"><span class="toc-number">3.</span> <span class="toc-text">字体与背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E6%A0%8F%E4%B8%8E%E5%BD%93%E5%89%8D%E8%BE%93%E5%85%A5%E4%BD%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">标签栏与当前输入位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%BC%A0%E6%A0%87%E3%80%81%E5%85%89%E6%A0%87%E4%B8%8E%E6%BB%9A%E5%8A%A8"><span class="toc-number">5.</span> <span class="toc-text">鼠标、光标与滚动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AA%97%E6%A0%BC%E4%B8%8E%E7%AA%97%E5%8F%A3%E6%93%8D%E4%BD%9C"><span class="toc-number">6.</span> <span class="toc-text">窗格与窗口操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E6%96%87%E5%91%BD%E4%BB%A4%E9%9D%A2%E6%9D%BF"><span class="toc-number">7.</span> <span class="toc-text">中文命令面板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E7%A1%AE%E8%AE%A4%E4%B8%8E%E6%B8%B2%E6%9F%93"><span class="toc-number">8.</span> <span class="toc-text">关闭确认与渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD%E5%BC%80%E5%85%B3"><span class="toc-number">9.</span> <span class="toc-text">功能开关</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%AF%E5%BE%84%E8%89%B2%E5%9D%97%E4%B8%8E%E7%AE%AD%E5%A4%B4"><span class="toc-number">10.</span> <span class="toc-text">路径色块与箭头</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/669fd641/" title="Linux Ghostty 个人配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Linux Ghostty 个人配置"/></a><div class="content"><a class="title" href="/posts/669fd641/" title="Linux Ghostty 个人配置">Linux Ghostty 个人配置</a><time datetime="2026-11-04T18:20:00.000Z" title="发表于 2026-11-05 02:20:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"/></a><div class="content"><a class="title" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符">Ghostty 与 WezTerm 配置 Starship 色块箭头提示符</a><time datetime="2026-10-31T16:39:58.000Z" title="发表于 2026-11-01 00:39:58">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/f238c/" title="Windows WezTerm 个人配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows WezTerm 个人配置"/></a><div class="content"><a class="title" href="/posts/f238c/" title="Windows WezTerm 个人配置">Windows WezTerm 个人配置</a><time datetime="2026-10-31T16:35:22.000Z" title="发表于 2026-11-01 00:35:22">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复"><img src="/web_image/covers/problem-solving.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GitHub 历史贡献不显示的排查与恢复"/></a><div class="content"><a class="title" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复">GitHub 历史贡献不显示的排查与恢复</a><time datetime="2026-10-31T15:22:16.000Z" title="发表于 2026-10-31 23:22:16">2026-10-31</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"><img src="/web_image/covers/ai-tools.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Qwen3-TTS 与 IndexTTS 2.5 单目录部署"/></a><div class="content"><a class="title" href="/posts/340280c6/" title="Qwen3-TTS 与 IndexTTS 2.5 单目录部署">Qwen3-TTS 与 IndexTTS 2.5 单目录部署</a><time datetime="2026-10-19T17:14:25.000Z" title="发表于 2026-10-20 01:14:25">2026-10-20</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/email-contact.js?v=1" defer></script><script src="/js/site-search.js?v=1" defer></script><script src="/js/moments_bundle.js" defer></script></div></body></html>
