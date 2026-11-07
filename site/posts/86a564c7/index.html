@@ -1,0 +1,391 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>scnterm 基于 WezTerm 的终端改版与使用指南 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="scnterm 是我基于 WezTerm 维护的个人终端项目，沿用 Lua 配置、分屏、内置 SSH 和串口连接，加入方向键关闭确认与独立应用图标。记录这次终端改版的具体调整，提供 Windows、Ubuntu 和 macOS 下载使用说明，以及 WezTerm 配置沿用方式和后续串口开发计划。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="scnterm 基于 WezTerm 的终端改版与使用指南">
+<meta property="og:url" content="https://scnabla.github.io/posts/86a564c7/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="scnterm 是我基于 WezTerm 维护的个人终端项目，沿用 Lua 配置、分屏、内置 SSH 和串口连接，加入方向键关闭确认与独立应用图标。记录这次终端改版的具体调整，提供 Windows、Ubuntu 和 macOS 下载使用说明，以及 WezTerm 配置沿用方式和后续串口开发计划。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/web_image/covers/software-development.png">
+<meta property="article:published_time" content="2026-11-07T16:12:12.000Z">
+<meta property="article:modified_time" content="2026-11-07T16:28:49.000Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="工具">
+<meta property="article:tag" content="终端">
+<meta property="article:tag" content="WezTerm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/web_image/covers/software-development.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "scnterm 基于 WezTerm 的终端改版与使用指南",
+  "url": "https://scnabla.github.io/posts/86a564c7/",
+  "image": "https://scnabla.github.io/web_image/covers/software-development.png",
+  "datePublished": "2026-11-07T16:12:12.000Z",
+  "dateModified": "2026-11-07T16:28:49.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "scnabla",
+      "url": "https://scnabla.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/posts/86a564c7/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'scnterm 基于 WezTerm 的终端改版与使用指南',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/email-contact.css?v=1"><link rel="stylesheet" href="/css/site-search.css?v=1"><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20261031-2"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">scnterm 基于 WezTerm 的终端改版与使用指南</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">scnterm 基于 WezTerm 的终端改版与使用指南</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-07T16:12:12.000Z" title="发表于 2026-11-08 00:12:12">2026-11-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-07T16:28:49.000Z" title="更新于 2026-11-08 00:28:49">2026-11-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><h2 id="WezTerm-简介"><a href="#WezTerm-简介" class="headerlink" title="WezTerm 简介"></a>WezTerm 简介</h2><p><a target="_blank" rel="noopener external nofollow noreferrer" href="https://wezterm.org/">WezTerm</a> 是由 Wez Furlong 开发、使用 Rust 编写的跨平台终端模拟器，支持 Windows、Linux 和 macOS。它提供标签页、分屏、字体与配色设置，也支持本地和远程终端会话管理。外观、快捷键、启动程序等通过 Lua 配置文件设置，内置 SSH 和串口连接功能。</p>
+<p>终端负责显示输出、接收输入；PowerShell、Bash、Zsh 等 Shell 负责解释和执行命令。更换终端软件，可以继续使用原来的 Shell、开发工具和命令行工作流。WezTerm 的已有功能与配置说明见 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://wezterm.org/features.html">官方功能列表</a>和<a target="_blank" rel="noopener external nofollow noreferrer" href="https://wezterm.org/config/files.html">配置文档</a>。</p>
+<h2 id="目前我在-scnterm-中做的修改"><a href="#目前我在-scnterm-中做的修改" class="headerlink" title="目前我在 scnterm 中做的修改"></a>目前我在 scnterm 中做的修改</h2><p>scnterm 是我基于 WezTerm 维护的个人终端项目，源码放在 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm">scnabla&#x2F;scnterm</a>。我希望继续使用它已有的终端能力和 Lua 配置，同时能直接修改日常使用中不顺手的交互。</p>
+<p>关闭确认就是一个具体例子：弹出确认界面后，我希望能按左右方向键选择，再按 Enter 确认。我把这类需要改动程序的功能放进 scnterm，字体、背景图和个人快捷键则继续放在 Lua 配置中。</p>
+<p>我目前使用 Ubuntu 和 Windows，也为以后使用其他设备保留了 macOS 的构建与发布。现阶段完成的调整包括关闭确认、应用名称与图标，以及独立的自动构建和下载入口。分屏、SSH、串口等基础能力沿用 WezTerm 的实现。</p>
+<p>这个分支以官方提交 <code>e68a8ec27727fbbda15e07f0a0737cd5e16481f6</code> 为开发基准，保留上游历史及 MIT 许可证。后续我会按合并、检查和验证的流程接入上游更新。</p>
+<h3 id="关闭确认支持方向键"><a href="#关闭确认支持方向键" class="headerlink" title="关闭确认支持方向键"></a>关闭确认支持方向键</h3><p>我保留了关闭前的确认界面，在原有 Y、N 和鼠标操作上增加方向键选择与 Enter 确认。关闭窗格、标签页或窗口时，只要当前设置要求确认，就可以使用这套操作。确认项继续显示为 <code>[Y]es</code> 和 <code>[N]o</code>。</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>打开确认界面</td>
+<td>默认选中 <code>[N]o</code></td>
+</tr>
+<tr>
+<td><code>←</code></td>
+<td>选中 <code>[Y]es</code></td>
+</tr>
+<tr>
+<td><code>→</code></td>
+<td>选中 <code>[N]o</code></td>
+</tr>
+<tr>
+<td><code>Enter</code></td>
+<td>执行当前选项</td>
+</tr>
+<tr>
+<td><code>Y</code></td>
+<td>直接确认关闭</td>
+</tr>
+<tr>
+<td><code>N</code> 或 <code>Esc</code></td>
+<td>取消关闭</td>
+</tr>
+<tr>
+<td>鼠标点击选项</td>
+<td>执行对应操作</td>
+</tr>
+</tbody></table>
+<p>默认选中“否”，因此弹出确认界面后直接按 Enter 会取消关闭。需要关闭时，按左方向键再按 Enter 即可。原有 Y、N、Esc 和鼠标操作继续可用。</p>
+<p>关闭确认是否出现，仍由 <code>window_close_confirmation</code>、关闭动作的 <code>confirm</code> 参数以及允许直接关闭的进程名列表控制。修改位于<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/blob/personal/wezterm-gui/src/overlay/confirm.rs">关闭确认实现</a>。</p>
+<h3 id="应用名称与独立图标"><a href="#应用名称与独立图标" class="headerlink" title="应用名称与独立图标"></a>应用名称与独立图标</h3><p>我给 scnterm 选定了橘黄色圆角背景，左侧用玫红色 <code>&gt;</code>，右侧用紫色光标横线。Windows 程序和安装器、Linux 窗口和安装包、macOS 应用包统一使用这套图案，并分别生成 ICO、PNG 和 ICNS 资源。</p>
+<p><img src="/posts/86a564c7/scnterm-terminal-icon.png" alt="scnterm 图标采用橘黄色背景、玫红色大于号和紫色光标横线"></p>
+<p>名称调整覆盖应用菜单、调试面板、连接提示等原有软件名称位置。我也把下载文件和解压后的外层目录统一改成 scnterm，macOS 应用包使用 <code>scnterm.app</code>。</p>
+<p>普通窗口标题继续显示 Shell、当前程序或配置指定的内容。我的个人配置原来在标题末尾写死了 WezTerm，为了让同一份配置能识别当前程序，我在 Lua 接口中增加了 <code>wezterm.app_name</code>：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> app_name = wezterm.app_name <span class="keyword">or</span> <span class="string">&#x27;WezTerm&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>在 scnterm 中，该值为 <code>scnterm</code>；在没有此字段的上游版本中，上面的写法回退为 <code>WezTerm</code>。已有 <code>format-window-title</code> 回调可以将原来写死的软件名替换成这个变量。</p>
+<h3 id="保留原有命令和配置接口"><a href="#保留原有命令和配置接口" class="headerlink" title="保留原有命令和配置接口"></a>保留原有命令和配置接口</h3><p>这次我把软件显示名与命令名分开处理，保留原有命令和配置接口。当前安装包里的程序仍叫 <code>wezterm</code>、<code>wezterm-gui</code> 和 <code>wezterm-mux-server</code>，Lua 仍使用 <code>require &#39;wezterm&#39;</code>，配置文件仍叫 <code>wezterm.lua</code>。</p>
+<p>因此，命令示例中的 <code>wezterm</code> 是实际可执行文件名。已有配置里的模块引用和配置路径可以继续使用，涉及本机字体、Shell 和目录的设置则按目标设备调整。</p>
+<h2 id="后续个性化开发计划"><a href="#后续个性化开发计划" class="headerlink" title="后续个性化开发计划"></a>后续个性化开发计划</h2><h3 id="Linux-窗口控制按钮"><a href="#Linux-窗口控制按钮" class="headerlink" title="Linux 窗口控制按钮"></a>Linux 窗口控制按钮</h3><p>我在 Ubuntu 26.04.1、GNOME、Wayland 环境中遇到了窗口右上角没有最小化、最大化和关闭按钮的问题。后续准备检查窗口装饰的协商和绘制行为，补齐默认配置下的窗口控制入口，并验证拖动、缩放及不同装饰配置。</p>
+<p>我已将它记为 <code>SCN-001</code>，排查方向和验收要求保存在<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/blob/personal/docs/known-issues.md">待修复问题</a>中。</p>
+<h3 id="完善串口开发体验"><a href="#完善串口开发体验" class="headerlink" title="完善串口开发体验"></a>完善串口开发体验</h3><p>我希望后续能直接用 scnterm 处理 UART 串口开发，计划按以下顺序完善现有功能：</p>
+<ol>
+<li>开放数据位、校验位、停止位和流控配置，支持明确选择无流控。</li>
+<li>增加可用端口列表、设备选择和常用连接配置。</li>
+<li>完善连接状态、主动断开、设备拔出提示和重新连接。</li>
+<li>增加串口日志保存，再独立评估十六进制（HEX）收发、时间戳和定时发送。</li>
+</ol>
+<p>这部分会先围绕我使用的 Ubuntu 和 Windows 连接实际 UART 设备验证，涉及共享代码时同时检查 macOS 兼容性。</p>
+<h2 id="scnterm使用相关"><a href="#scnterm使用相关" class="headerlink" title="scnterm使用相关"></a>scnterm使用相关</h2><h3 id="下载与安装-scnterm"><a href="#下载与安装-scnterm" class="headerlink" title="下载与安装 scnterm"></a>下载与安装 scnterm</h3><p>我把安装包统一放在 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/releases/tag/latest">scnterm Releases</a>。页面标题为 scnterm，固定使用 <code>latest</code> 标签，后续成功构建会更新同一个页面中的文件。</p>
+<p>下表文件大小对应 2026-11-08 核对的提交 <code>ef2862077</code>，后续发布时会变化。</p>
+<table>
+<thead>
+<tr>
+<th>平台与用途</th>
+<th>下载文件</th>
+<th>大小</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Windows x64 便携版</td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/releases/download/latest/scnterm-windows-x64.zip">scnterm-windows-x64.zip</a></td>
+<td>67.5 MiB</td>
+</tr>
+<tr>
+<td>Windows x64 安装程序</td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/releases/download/latest/scnterm-windows-x64-setup.exe">scnterm-windows-x64-setup.exe</a></td>
+<td>43.2 MiB</td>
+</tr>
+<tr>
+<td>Ubuntu 26.04 x64 安装包</td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/releases/download/latest/scnterm-ubuntu26.04-amd64.deb">scnterm-ubuntu26.04-amd64.deb</a></td>
+<td>34.1 MiB</td>
+</tr>
+<tr>
+<td>Ubuntu 26.04 x64 AppImage</td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/releases/download/latest/scnterm-ubuntu26.04-x64.AppImage">scnterm-ubuntu26.04-x64.AppImage</a></td>
+<td>46.8 MiB</td>
+</tr>
+<tr>
+<td>macOS Intel 与 Apple Silicon 通用包</td>
+<td><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/releases/download/latest/scnterm-macos-universal.zip">scnterm-macos-universal.zip</a></td>
+<td>103.1 MiB</td>
+</tr>
+</tbody></table>
+<p>Release 另外提供 Ubuntu 文件归档、源码包和 <code>build-info.json</code>。构建信息文件记录源码提交、平台与工作流运行地址，可用于确认下载文件对应的版本。</p>
+<h4 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h4><p>便携版解压到独立目录后，打开 <code>wezterm-gui.exe</code> 启动窗口。命令行操作使用同目录下的 <code>wezterm.exe</code>。例如，在解压目录的 PowerShell 中连接 SSH：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\wezterm.exe ssh user@example.com</span><br></pre></td></tr></table></figure>
+
+<p>安装程序用于常规安装和快捷方式配置。当前安装程序沿用 WezTerm 的安装标识和默认安装路径；电脑已有官方 WezTerm 时，可以先用独立目录中的便携版试用 scnterm。</p>
+<h4 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h4><p>Ubuntu 26.04 的 <code>.deb</code> 包可通过本地文件安装。在下载目录执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install ./scnterm-ubuntu26.04-amd64.deb</span><br></pre></td></tr></table></figure>
+
+<p>安装后从应用菜单打开 scnterm，也可使用 <code>wezterm</code> 命令。</p>
+<p>AppImage 形式的启动命令为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> +x scnterm-ubuntu26.04-x64.AppImage</span><br><span class="line">./scnterm-ubuntu26.04-x64.AppImage</span><br></pre></td></tr></table></figure>
+
+<p>Linux 下载包目前以我使用的 Ubuntu 26.04 为构建目标。我也保留了 Ubuntu 22.04 和 24.04 的独立编译与测试，暂不为它们分别发布安装包；平台安排见后面的构建表。</p>
+<h4 id="macOS"><a href="#macOS" class="headerlink" title="macOS"></a>macOS</h4><p>下载通用 ZIP 包，解压后将 <code>scnterm.app</code> 放入“应用程序”目录。一个应用包同时包含 Intel 和 Apple Silicon 架构。</p>
+<p>当前发布流程没有配置 Apple 开发者签名和公证，macOS 首次打开时的检查仍由系统安全策略处理。</p>
+<h3 id="沿用和调整-Lua-配置"><a href="#沿用和调整-Lua-配置" class="headerlink" title="沿用和调整 Lua 配置"></a>沿用和调整 Lua 配置</h3><p>scnterm 继续使用 WezTerm 的配置查找方式。常用位置包括：</p>
+<table>
+<thead>
+<tr>
+<th>系统</th>
+<th>配置位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Windows</td>
+<td><code>%USERPROFILE%\.wezterm.lua</code> 或 <code>%USERPROFILE%\.config\wezterm\wezterm.lua</code></td>
+</tr>
+<tr>
+<td>Linux、macOS</td>
+<td><code>~/.wezterm.lua</code> 或 <code>~/.config/wezterm/wezterm.lua</code></td>
+</tr>
+</tbody></table>
+<p>Windows 还支持读取程序目录中的 <code>wezterm.lua</code>，该位置优先于普通用户目录配置。需要明确指定配置时，可使用 <code>--config-file</code>。原有配置文件中的 <code>require &#39;wezterm&#39;</code> 保持原样。</p>
+<p>如果想先体验方向键关闭确认，可以使用这份最小配置：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">local</span> wezterm = <span class="built_in">require</span> <span class="string">&#x27;wezterm&#x27;</span></span><br><span class="line"><span class="keyword">local</span> <span class="built_in">config</span> = wezterm.config_builder()</span><br><span class="line"></span><br><span class="line"><span class="built_in">config</span>.font_size = <span class="number">12</span></span><br><span class="line"><span class="built_in">config</span>.window_close_confirmation = <span class="string">&#x27;AlwaysPrompt&#x27;</span></span><br><span class="line"><span class="built_in">config</span>.skip_close_confirmation_for_processes_named = &#123;&#125;</span><br><span class="line"><span class="built_in">config</span>.check_for_updates = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">config</span>.keys = &#123;</span><br><span class="line">  &#123;</span><br><span class="line">    key = <span class="string">&#x27;w&#x27;</span>,</span><br><span class="line">    mods = <span class="string">&#x27;CTRL|SHIFT&#x27;</span>,</span><br><span class="line">    action = wezterm.action.CloseCurrentPane &#123; confirm = <span class="literal">true</span> &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="built_in">config</span></span><br></pre></td></tr></table></figure>
+
+<p>这个示例将 <code>Ctrl + Shift + W</code> 设为关闭当前窗格并请求确认，并清空按进程名跳过确认的列表。已有完整配置时，将相关项合并到原来的配置表和 <code>keys</code> 列表中。</p>
+<p>程序内原有更新检测仍查询 WezTerm 官方发布源，因此示例设置 <code>check_for_updates = false</code>。scnterm 的版本更新从自己的 Release 页面下载；自动构建发布负责生成和更新下载文件，不会自动替换电脑上的程序。</p>
+<p>我日常使用的字体、背景图、窗格焦点提示、中文命令面板和快捷键保存在 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/tree/main/terminal/wezterm/windows">personal-config</a>。这套配置独立维护，安装 scnterm 后不会自动启用。具体设置写在之前的 <a href="/posts/f238c/">Windows WezTerm 个人配置</a>中，需要相同外观和操作习惯时可以参考。</p>
+<h3 id="SSH-连接"><a href="#SSH-连接" class="headerlink" title="SSH 连接"></a>SSH 连接</h3><p>scnterm 保留了内置 SSH 客户端，默认使用 <code>libssh</code>。它读取 SSH 配置、完成服务器指纹检查与认证，再把远程终端的输入输出接入窗格。</p>
+<p>普通连接使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wezterm ssh user@example.com</span><br></pre></td></tr></table></figure>
+
+<p>这种连接只要求远端提供 SSH 服务。属于同一远程连接的新标签页或窗格可以复用已有认证，在 SSH 会话中创建新的通道。</p>
+<p>如果需要断线后重新连接原来的远程会话，可以配置 <code>SSHMUX</code>，由远端的 <code>wezterm-mux-server</code> 管理终端进程。它要求远端安装兼容的命令行和服务程序，并在断开期间保持远端服务运行。</p>
+<p>在普通 Shell 里直接输入 <code>ssh</code>，调用的是系统找到的 SSH 程序；使用 <code>wezterm ssh</code> 才会进入这里介绍的内置客户端。实现说明见项目的 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/blob/personal/docs/ssh.md">SSH 文档</a>。</p>
+<h3 id="UART-串口连接"><a href="#UART-串口连接" class="headerlink" title="UART 串口连接"></a>UART 串口连接</h3><p>scnterm 继承了串口终端功能，通过 <code>serial2</code> 库访问系统串口。UART 是开发板常用的串行通信接口，经 USB 转串口设备连接电脑后，可使用系统识别出的端口名打开终端。</p>
+<p>Linux 示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wezterm serial --baud 115200 /dev/ttyUSB0</span><br></pre></td></tr></table></figure>
+
+<p>Windows 示例：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\wezterm.exe serial <span class="literal">--baud</span> <span class="number">115200</span> COM3</span><br></pre></td></tr></table></figure>
+
+<p>端口名称和波特率需要按实际设备填写。经常使用的端口也可以放入 Lua 的 <code>serial_ports</code> 配置，并从启动菜单选择。</p>
+<p>当前公开配置项主要是端口和波特率。底层默认使用 8 位数据、无校验、1 位停止位，以及 XON&#x2F;XOFF 软件流控，即通过控制字符通知对端暂停或继续发送。设备要求无流控或其他通信参数时，需要进一步开放底层已有的设置接口。我已把这项工作记入待办，准备在后续串口功能开发中处理。</p>
+<p>现有窗口按照终端规则解析收到的数据，适合文本日志和设备命令行。用于二进制协议调试的十六进制（HEX）收发与原始字节查看属于后续独立功能。</p>
+<h2 id="scnterm-的自动构建与版本更新"><a href="#scnterm-的自动构建与版本更新" class="headerlink" title="scnterm 的自动构建与版本更新"></a>scnterm 的自动构建与版本更新</h2><p>我将 WezTerm 上游的构建步骤整理到 scnterm 自己的 GitHub Actions 流程中。向默认分支 <code>personal</code> 推送提交后，自动编译、测试和打包；所有要求的平台任务通过后，才更新 <code>latest</code> Release。</p>
+<table>
+<thead>
+<tr>
+<th>平台</th>
+<th>架构</th>
+<th>当前流程</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Windows</td>
+<td>x86_64</td>
+<td>编译、测试、打包与发布</td>
+</tr>
+<tr>
+<td>Ubuntu 26.04</td>
+<td>x86_64</td>
+<td>编译、测试、打包与发布</td>
+</tr>
+<tr>
+<td>Ubuntu 22.04</td>
+<td>x86_64</td>
+<td>编译与测试</td>
+</tr>
+<tr>
+<td>Ubuntu 24.04</td>
+<td>x86_64</td>
+<td>编译与测试</td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>Intel、Apple Silicon</td>
+<td>编译双架构通用包并发布，自动测试在 Intel 目标上运行</td>
+</tr>
+</tbody></table>
+<p>包含新图标的提交 <code>ef2862077</code> 已完成这一轮构建和发布，对应记录为 <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/actions/runs/42364339969">GitHub Actions 构建记录</a>。</p>
+<p>我选择保留一个持续更新的 Release，下载地址保持固定，安装包和提交信息随成功构建更新。构建或测试失败时不执行发布；如果分支已有更新提交，旧提交的发布任务会跳过，避免下载入口退回旧版本。</p>
+<p>仓库中，<code>main</code> 保留上游基准，<code>personal</code> 保存我的改动和项目文档。单项功能从 <code>personal</code> 建立功能分支，验证后合入；同步上游时单独处理冲突和兼容性。具体平台和发布步骤见<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/blob/personal/docs/continuous-release.md">自动构建与发布说明</a>。</p>
+<h2 id="scnterm-项目入口"><a href="#scnterm-项目入口" class="headerlink" title="scnterm 项目入口"></a>scnterm 项目入口</h2><ul>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm">源码仓库</a></li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/releases/tag/latest">安装包与构建信息</a></li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/scnterm/blob/personal/docs/README.md">开发与维护步骤</a></li>
+<li><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/tree/main/terminal/wezterm/windows">个人终端配置</a></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/86a564c7/">https://scnabla.github.io/posts/86a564c7/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%B7%A5%E5%85%B7/">工具</a><a class="post-meta__tags" href="/tags/%E7%BB%88%E7%AB%AF/">终端</a><a class="post-meta__tags" href="/tags/WezTerm/">WezTerm</a></div><div class="post-share"><div class="social-share" data-image="/web_image/covers/software-development.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/669fd641/" title="Linux Ghostty 个人配置"><img class="cover" src="/web_image/covers/life-notes.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Linux Ghostty 个人配置</div></div><div class="info-2"><div class="info-item-1">Linux 日常使用的 Ghostty 个人配置，记录 Monokai Classic 配色、字体和背景、鼠标复制粘贴、分屏快捷键、窗格调整步进，以及 Bash 与 Starship 提示符的配置位置。完整配置、字体和图片保存在公开仓库。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/avatar-s-circuit.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:scnabla@163.com" rel="external nofollow noreferrer" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#WezTerm-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">WezTerm 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%89%8D%E6%88%91%E5%9C%A8-scnterm-%E4%B8%AD%E5%81%9A%E7%9A%84%E4%BF%AE%E6%94%B9"><span class="toc-number">2.</span> <span class="toc-text">目前我在 scnterm 中做的修改</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E7%A1%AE%E8%AE%A4%E6%94%AF%E6%8C%81%E6%96%B9%E5%90%91%E9%94%AE"><span class="toc-number">2.1.</span> <span class="toc-text">关闭确认支持方向键</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%90%8D%E7%A7%B0%E4%B8%8E%E7%8B%AC%E7%AB%8B%E5%9B%BE%E6%A0%87"><span class="toc-number">2.2.</span> <span class="toc-text">应用名称与独立图标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%9D%E7%95%99%E5%8E%9F%E6%9C%89%E5%91%BD%E4%BB%A4%E5%92%8C%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3"><span class="toc-number">2.3.</span> <span class="toc-text">保留原有命令和配置接口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD%E4%B8%AA%E6%80%A7%E5%8C%96%E5%BC%80%E5%8F%91%E8%AE%A1%E5%88%92"><span class="toc-number">3.</span> <span class="toc-text">后续个性化开发计划</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux-%E7%AA%97%E5%8F%A3%E6%8E%A7%E5%88%B6%E6%8C%89%E9%92%AE"><span class="toc-number">3.1.</span> <span class="toc-text">Linux 窗口控制按钮</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E5%96%84%E4%B8%B2%E5%8F%A3%E5%BC%80%E5%8F%91%E4%BD%93%E9%AA%8C"><span class="toc-number">3.2.</span> <span class="toc-text">完善串口开发体验</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#scnterm%E4%BD%BF%E7%94%A8%E7%9B%B8%E5%85%B3"><span class="toc-number">4.</span> <span class="toc-text">scnterm使用相关</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85-scnterm"><span class="toc-number">4.1.</span> <span class="toc-text">下载与安装 scnterm</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Windows"><span class="toc-number">4.1.1.</span> <span class="toc-text">Windows</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Ubuntu"><span class="toc-number">4.1.2.</span> <span class="toc-text">Ubuntu</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#macOS"><span class="toc-number">4.1.3.</span> <span class="toc-text">macOS</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B2%BF%E7%94%A8%E5%92%8C%E8%B0%83%E6%95%B4-Lua-%E9%85%8D%E7%BD%AE"><span class="toc-number">4.2.</span> <span class="toc-text">沿用和调整 Lua 配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SSH-%E8%BF%9E%E6%8E%A5"><span class="toc-number">4.3.</span> <span class="toc-text">SSH 连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UART-%E4%B8%B2%E5%8F%A3%E8%BF%9E%E6%8E%A5"><span class="toc-number">4.4.</span> <span class="toc-text">UART 串口连接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#scnterm-%E7%9A%84%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA%E4%B8%8E%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0"><span class="toc-number">5.</span> <span class="toc-text">scnterm 的自动构建与版本更新</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#scnterm-%E9%A1%B9%E7%9B%AE%E5%85%A5%E5%8F%A3"><span class="toc-number">6.</span> <span class="toc-text">scnterm 项目入口</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/86a564c7/" title="scnterm 基于 WezTerm 的终端改版与使用指南"><img src="/web_image/covers/software-development.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="scnterm 基于 WezTerm 的终端改版与使用指南"/></a><div class="content"><a class="title" href="/posts/86a564c7/" title="scnterm 基于 WezTerm 的终端改版与使用指南">scnterm 基于 WezTerm 的终端改版与使用指南</a><time datetime="2026-11-07T16:12:12.000Z" title="发表于 2026-11-08 00:12:12">2026-11-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/669fd641/" title="Linux Ghostty 个人配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Linux Ghostty 个人配置"/></a><div class="content"><a class="title" href="/posts/669fd641/" title="Linux Ghostty 个人配置">Linux Ghostty 个人配置</a><time datetime="2026-11-04T18:20:00.000Z" title="发表于 2026-11-05 02:20:00">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符"/></a><div class="content"><a class="title" href="/posts/e326aeae/" title="Ghostty 与 WezTerm 配置 Starship 色块箭头提示符">Ghostty 与 WezTerm 配置 Starship 色块箭头提示符</a><time datetime="2026-10-31T16:39:58.000Z" title="发表于 2026-11-01 00:39:58">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/f238c/" title="Windows WezTerm 个人配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Windows WezTerm 个人配置"/></a><div class="content"><a class="title" href="/posts/f238c/" title="Windows WezTerm 个人配置">Windows WezTerm 个人配置</a><time datetime="2026-10-31T16:35:22.000Z" title="发表于 2026-11-01 00:35:22">2026-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复"><img src="/web_image/covers/problem-solving.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GitHub 历史贡献不显示的排查与恢复"/></a><div class="content"><a class="title" href="/posts/8965c14c/" title="GitHub 历史贡献不显示的排查与恢复">GitHub 历史贡献不显示的排查与恢复</a><time datetime="2026-10-31T15:22:16.000Z" title="发表于 2026-10-31 23:22:16">2026-10-31</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/email-contact.js?v=1" defer></script><script src="/js/site-search.js?v=1" defer></script><script src="/js/moments_bundle.js" defer></script></div></body></html>
