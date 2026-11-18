@@ -1,0 +1,241 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键 | scnabla</title><meta name="author" content="scnabla"><meta name="copyright" content="scnabla"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#F4F1EA"><meta name="description" content="ScnTerm 沿用 WezTerm 的 Lua 配置。我做了一个独立的 Windows 配置编辑器，可以在窗口里换串口、设置日志高亮、增删 SSH 服务器和快捷键。保存前能看到具体改了哪几行，也能从备份恢复原文件。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键">
+<meta property="og:url" content="https://scnabla.github.io/posts/e192ec79/">
+<meta property="og:site_name" content="scnabla">
+<meta property="og:description" content="ScnTerm 沿用 WezTerm 的 Lua 配置。我做了一个独立的 Windows 配置编辑器，可以在窗口里换串口、设置日志高亮、增删 SSH 服务器和快捷键。保存前能看到具体改了哪几行，也能从备份恢复原文件。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://scnabla.github.io/posts/86a564c7/scnterm-terminal-icon.png">
+<meta property="article:published_time" content="2026-11-18T16:41:33.000Z">
+<meta property="article:modified_time" content="2026-11-18T16:44:50.000Z">
+<meta property="article:author" content="scnabla">
+<meta property="article:tag" content="终端">
+<meta property="article:tag" content="WezTerm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://scnabla.github.io/posts/86a564c7/scnterm-terminal-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键",
+  "url": "https://scnabla.github.io/posts/e192ec79/",
+  "image": "https://scnabla.github.io/posts/86a564c7/scnterm-terminal-icon.png",
+  "datePublished": "2026-11-18T16:41:33.000Z",
+  "dateModified": "2026-11-18T16:44:50.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "scnabla",
+      "url": "https://scnabla.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/web_image/favicon-s-circuit.png"><link rel="canonical" href="https://scnabla.github.io/posts/e192ec79/"><link rel="preconnect"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="/pluginsSrc/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1B2028')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F4F1EA')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 6 || hour >= 18
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: '/pluginsSrc/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/email-contact.css?v=1"><link rel="stylesheet" href="/css/site-search.css?v=1"><link rel="stylesheet" href="/css/timeline.css"><link rel="stylesheet" href="/css/personal.css?v=20261031-2"><meta name="robots" content="noindex"><meta name="generator" content="Hexo 7.3.0"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/web_image/background-circuit-light-harmonized-4k.webp);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/web_image/my.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">34</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">scnabla</span></a><a class="nav-page-title" href="/"><span class="site-name">用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/light-notes/"><i class="fa-fw fas fa-camera-retro"></i><span> 光影拾笺</span></a></div><div class="menus_item"><a class="site-page" href="/status/"><i class="fa-fw fas fa-chart-line"></i><span> 状态看板</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo"><i class="fa-fw fas fa-bullhorn"></i><span> 网站公告</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-18T16:41:33.000Z" title="发表于 2026-11-19 00:41:33">2026-11-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-18T16:44:50.000Z" title="更新于 2026-11-19 00:44:50">2026-11-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BD%AF%E4%BB%B6/">软件</a></span></div><div class="meta-secondline"></div></div></div><article class="container post-content" id="article-container"><p>我把 ScnTerm 的串口、SSH 和快捷键配置拆成了三个 Lua 文件。拆开以后，找文件容易了，但把开发板从 <code>COM3</code> 换到 <code>COM5</code>，还是得打开 <code>serial.lua</code> 找到那条连接。另一个常见操作是给快捷键换个键位，真正需要改的只有一个键名，旁边却可能是一段我想原样保留的 Lua 动作。</p>
+<p>为这些日常修改，我做了一个独立的 Windows 配置编辑器。选中连接或快捷键，改好以后，窗口会列出即将写入文件的几行。编辑器和终端各自运行，平时仍然可以用文本编辑器维护同一套 Lua。终端的安装和整体配置见 <a href="/posts/86a564c7/">ScnTerm 使用指南</a>。</p>
+<h2 id="打开自己的配置目录"><a href="#打开自己的配置目录" class="headerlink" title="打开自己的配置目录"></a>打开自己的配置目录</h2><p>从<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/releases/tag/scnterm-config">配置程序发布页</a>下载 Windows x64 压缩包 <code>ScnTermConfig-windows-x64.zip</code>，完整解压后双击 <code>ScnTermConfig.exe</code>，无需另装 Python 或 Rust。</p>
+<p>程序会先查找 <code>%USERPROFILE%\.config\wezterm</code>。配置放在其他位置时，点“打开配置目录”，选择主配置 <code>wezterm.lua</code> 所在的文件夹。第一次想试一下，可以像下图一样先打开解压目录里的 <code>examples</code>。窗口顶部显示正在编辑的目录，保存示例只会改到那份示例。</p>
+<p><img src="/posts/e192ec79/scnterm-config-serial-window.png" alt="Windows 上的 ScnTerm 配置编辑器打开示例目录，串口连接页显示 COM3、115200 波特率和日志开关"></p>
+<table>
+<thead>
+<tr>
+<th>页签</th>
+<th>对应文件</th>
+<th>可修改的内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>串口连接、日志、高亮规则</td>
+<td><code>serial.lua</code></td>
+<td>端口和通信参数、日志目录、时间戳、关键词颜色</td>
+</tr>
+<tr>
+<td>SSH</td>
+<td><code>ssh.lua</code></td>
+<td>服务器列表、地址、用户名和连接方式</td>
+</tr>
+<tr>
+<td>快捷键</td>
+<td><code>keys.lua</code></td>
+<td>按键、修饰键和动作</td>
+</tr>
+<tr>
+<td>其他配置 · 只读</td>
+<td><code>wezterm.lua</code> 等文件</td>
+<td>查看原文</td>
+</tr>
+</tbody></table>
+<p>如果所有设置都写在一份 <code>wezterm.lua</code> 里，当前版本只能查看这份主文件。可编辑的页签读取同目录下对应的独立文件，缺少哪个就提示哪个。拆分和加载模块的写法可以参考<a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/tree/main/tools/scnterm-config/examples">随程序提供的配置示例</a>。</p>
+<h2 id="改一次串口，看看-Lua-会写入什么"><a href="#改一次串口，看看-Lua-会写入什么" class="headerlink" title="改一次串口，看看 Lua 会写入什么"></a>改一次串口，看看 Lua 会写入什么</h2><p>以上图的“开发板控制台”为例。假设 Windows 现在把设备识别成了 <code>COM5</code>，板端波特率仍为 <code>115200</code>。在左侧选中这条连接，只改右侧的“端口”，然后点“预览并保存”。这次差异中应当只有端口那一行，减号表示原内容，加号表示准备写入的内容。</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="deletion">-        port = &#x27;COM3&#x27;,</span></span><br><span class="line"><span class="addition">+        port = &#x27;COM5&#x27;,</span></span><br></pre></td></tr></table></figure>
+
+<p>点“确认保存”后，再回到 ScnTerm，按 <code>Alt+L</code> 选择这条连接。端口和波特率在下次连接时生效。对于已有连接，Lua 省略波特率时，窗口显示终端实际使用的 <code>9600</code>。只改端口，编辑器就保留波特率原来的省略写法。</p>
+<p>“连接时记录日志”按连接设置。在“日志”页可以统一修改保存目录、单个文件大小和接收时间戳，这些设置用于下一次开始记录。想在连续输出中看清故障信息，可以在“高亮规则”中新增一组，选好文字颜色，再填写匹配内容：</p>
+<ul>
+<li>固定文字用“关键词”。例如把 <code>[故障]</code> 单独写在一行，方括号也会参与匹配。</li>
+<li>相似的词用“正则表达式”。例如 <code>\bfail(?:ed|ure)?\b</code> 可以匹配完整的 <code>fail</code>、<code>failed</code> 和 <code>failure</code>。将这条规则的“区分大小写”设为“否”，大写的 <code>FAILED</code> 也能匹配。</li>
+</ul>
+<p>两个框的灰色“格式参考”都是输入示例。填写自己的内容后提示就会消失。高亮随终端配置重载生效，保存到磁盘的日志仍是原来的文字。串口连接和日志的使用细节见 <a href="/posts/81549b90/">ScnTerm 串口调试</a>。</p>
+<h2 id="添加-SSH-服务器和修改快捷键"><a href="#添加-SSH-服务器和修改快捷键" class="headerlink" title="添加 SSH 服务器和修改快捷键"></a>添加 SSH 服务器和修改快捷键</h2><p>在“SSH”页点“新增服务器”，给连接取一个能在启动菜单里认出的名称，比如“编译机”。把服务器地址填成自己的 <code>主机名:端口</code>，再填用户名。普通 SSH 连接的“会话类型”选 <code>None</code>。使用随程序提供的示例时，还要把“启用 SSH 菜单”设为“是”。预览并保存 <code>ssh.lua</code> 后，可以从 ScnTerm 的 <code>Alt+L</code> 菜单选择服务器。登录之后想直接进入项目目录，可以使用<a href="/posts/833aab02/">终端常用路径的快速切换</a>。</p>
+<p>在“快捷键”页，已有绑定可以只换按键。例如想把示例中“按数字交换窗格”的入口从 <code>F5</code> 改成 <code>F6</code>，选中 <code>F5</code> 那一条，将“按键”改为 <code>F6</code>，保留修饰键 <code>NONE</code> 和原来的自定义动作。保存后，原来负责数字选窗格的 Lua 代码会继续使用。</p>
+<p>也可以点“新增绑定”，填写按键和修饰键，从“动作”中选一个操作，例如“新建标签页”。组合键里的修饰键写成 <code>CTRL|SHIFT</code>，单独按一个键则填 <code>NONE</code>。如果同时改了 SSH 服务器和快捷键，要在两个页签分别预览、确认。保存 <code>keys.lua</code> 时，SSH 页尚未保存的输入仍留在窗口里。</p>
+<h2 id="手写配置的保留与恢复"><a href="#手写配置的保留与恢复" class="headerlink" title="手写配置的保留与恢复"></a>手写配置的保留与恢复</h2><p>我希望这个工具能和手写 Lua 配合使用。比如把波特率写成 <code>baud = get_baud()</code>，具体数值由函数决定。编辑器读取文件时只解析代码结构，这种字段会保留原表达式并显示为只读。对于能识别的普通字段，它只替换相应位置，周围的注释、条件分支和无关设置都可以保留。</p>
+<p>每次确认保存前，程序都会在配置目录的 <code>.scnterm-config-backups/</code> 下备份原文件。如果预览期间又用文本编辑器改了同一文件，保存会被拦下，此时应重新读取并核对修改。想撤回刚才的改动，可以回到对应页签点“恢复备份”，选择那次保存记录，预览后确认。连续改过几次时，从最近一次开始逐次恢复。</p>
+<p><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/tree/main/tools/scnterm-config">配置编辑器源码和使用说明</a> · <a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/scnabla/personal-config/releases/tag/scnterm-config">Windows 下载</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://scnabla.github.io">scnabla</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://scnabla.github.io/posts/e192ec79/">https://scnabla.github.io/posts/e192ec79/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本文著作权归 scnabla 所有。未经 scnabla 事先明确许可，禁止复制、转载、搬运、改编或再次发布，包括非商业用途。标注作者、注明来源或附原文链接，不代表获得授权。</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BB%88%E7%AB%AF/">终端</a><a class="post-meta__tags" href="/tags/WezTerm/">WezTerm</a></div><div class="post-share"><div class="social-share" data-image="/posts/86a564c7/scnterm-terminal-icon.png" data-sites="wechat,qq"></div><link rel="stylesheet" href="/pluginsSrc/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="/pluginsSrc/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/833aab02/" title="ScnTerm: 终端常用路径的快速切换"><img class="cover" src="/posts/86a564c7/scnterm-terminal-icon.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">ScnTerm: 终端常用路径的快速切换</div></div><div class="info-2"><div class="info-item-1">ScnTerm 在 WezTerm 内置 SSH 的基础上增加常用目录菜单，通过 Alt+P 收藏当前路径、上下选择并回车切换，按 SSH 连接分别保存目录。介绍路径添加与删除、本地记录位置，以及拆分后的 keys.lua 和 ssh.lua 配置方式。</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/web_image/my.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">scnabla</div><div class="author-info-description">嵌入式 · Linux · RTOS · 硬件 · 软件</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">34</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">30</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">6</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/scnabla" rel="external nofollow noreferrer" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://space.bilibili.com/155711890?spm_id_from=333.1007.0.0" rel="external nofollow noreferrer" target="_blank" title="bilibili"><i class="fab fa-bilibili" style="color: #4a7dbe;"></i></a><a class="social-icon" href="mailto:scnabla@163.com" rel="external nofollow noreferrer" target="_blank" title="邮箱"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-moments card-light-notes" id="card-moments"><div class="item-headline"><i class="fas fa-camera-retro"></i><span>光影拾笺</span></div><div class="item-content"><div class="light-notes-list">
+<article class="light-note-item">
+  <a class="light-note-cover" href="/posts/3bcc5d06/" aria-label="查看：石岩山">
+    <img src="&#x2F;posts&#x2F;3bcc5d06&#x2F;A7M01077.jpg" alt="石岩山" loading="lazy">
+  </a>
+  <a class="light-note-title" href="/posts/3bcc5d06/">石岩山</a>
+  <time class="light-note-date" datetime="2026-05-17T03:28:22.000Z">2026年5月17日 11:28</time>
+</article>
+</div>
+<div class="moments-more"><a href="/light-notes/">查看全部光影</a></div></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E5%BC%80%E8%87%AA%E5%B7%B1%E7%9A%84%E9%85%8D%E7%BD%AE%E7%9B%AE%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">打开自己的配置目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%B9%E4%B8%80%E6%AC%A1%E4%B8%B2%E5%8F%A3%EF%BC%8C%E7%9C%8B%E7%9C%8B-Lua-%E4%BC%9A%E5%86%99%E5%85%A5%E4%BB%80%E4%B9%88"><span class="toc-number">2.</span> <span class="toc-text">改一次串口，看看 Lua 会写入什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0-SSH-%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%92%8C%E4%BF%AE%E6%94%B9%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="toc-number">3.</span> <span class="toc-text">添加 SSH 服务器和修改快捷键</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%8B%E5%86%99%E9%85%8D%E7%BD%AE%E7%9A%84%E4%BF%9D%E7%95%99%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="toc-number">4.</span> <span class="toc-text">手写配置的保留与恢复</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/e192ec79/" title="用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键"><img src="/posts/86a564c7/scnterm-terminal-icon.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键"/></a><div class="content"><a class="title" href="/posts/e192ec79/" title="用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键">用 ScnTerm 的 Lua 配置编辑器管理串口、SSH 和快捷键</a><time datetime="2026-11-18T16:41:33.000Z" title="发表于 2026-11-19 00:41:33">2026-11-19</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/833aab02/" title="ScnTerm: 终端常用路径的快速切换"><img src="/posts/86a564c7/scnterm-terminal-icon.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ScnTerm: 终端常用路径的快速切换"/></a><div class="content"><a class="title" href="/posts/833aab02/" title="ScnTerm: 终端常用路径的快速切换">ScnTerm: 终端常用路径的快速切换</a><time datetime="2026-11-11T15:15:32.000Z" title="发表于 2026-11-11 23:15:32">2026-11-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/81549b90/" title="ScnTerm: WezTerm UART 串口调试支持与使用"><img src="/posts/81549b90/scnterm-terminal-icon.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ScnTerm: WezTerm UART 串口调试支持与使用"/></a><div class="content"><a class="title" href="/posts/81549b90/" title="ScnTerm: WezTerm UART 串口调试支持与使用">ScnTerm: WezTerm UART 串口调试支持与使用</a><time datetime="2026-11-08T15:28:58.000Z" title="发表于 2026-11-08 23:28:58">2026-11-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/86a564c7/" title="scnterm 基于 WezTerm 的终端改版与使用指南"><img src="/posts/86a564c7/scnterm-terminal-icon.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="scnterm 基于 WezTerm 的终端改版与使用指南"/></a><div class="content"><a class="title" href="/posts/86a564c7/" title="scnterm 基于 WezTerm 的终端改版与使用指南">scnterm 基于 WezTerm 的终端改版与使用指南</a><time datetime="2026-11-07T16:12:12.000Z" title="发表于 2026-11-08 00:12:12">2026-11-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/669fd641/" title="Linux Ghostty 个人配置"><img src="/web_image/covers/life-notes.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Linux Ghostty 个人配置"/></a><div class="content"><a class="title" href="/posts/669fd641/" title="Linux Ghostty 个人配置">Linux Ghostty 个人配置</a><time datetime="2026-11-04T18:20:00.000Z" title="发表于 2026-11-05 02:20:00">2026-11-05</time></div></div></div></div></div></div></main><footer id="footer" style="background-color: #2d3236;"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2024 - 2026 By scnabla</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener external nofollow noreferrer" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.4</a></span></div><div class="footer_custom_text"><a href="https://beian.miit.gov.cn/" rel="external nofollow noreferrer" target="_blank">鲁ICP备2024118405号-2</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script src="/js/email-contact.js?v=1" defer></script><script src="/js/site-search.js?v=1" defer></script><script src="/js/moments_bundle.js" defer></script></div></body></html>
